@@ -9,7 +9,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            UserScreen(userId = "123") // Ganti "123" dengan ID pengguna yang ingin Anda ambil
+
         }
     }
 }
