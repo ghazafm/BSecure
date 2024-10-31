@@ -1,5 +1,6 @@
-package com.mawar.bsecure.view.login
+package com.mawar.bsecure.ui.view.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,54 +27,66 @@ fun ForgotPasswordScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF5A2D82)) // Background color for the top part
-            .padding(top = 40.dp),
+            .padding(top = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        IconButton(onClick = { /* Handle back button click */ }) {
-            Icon(
-                painter = painterResource(id = R.drawable.back1),
-                contentDescription = "Back",
-                tint = Color.White
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(onClick = { /* Handle back button click */ }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.back1),
+                    contentDescription = "Back",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(80.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(50.dp))
+
+            Text(
+                text = "Lupa Password",
+                fontSize = 32.sp,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
             )
         }
-
-        Text(
-            text = "Lupa Password",
-            fontSize = 24.sp,
-            color = Color.White,
-            fontWeight = FontWeight.Bold
-        )
 
         Spacer(modifier = Modifier.height(30.dp))
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(Color.White, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
                 .padding(horizontal = 32.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Image(
                 painter = painterResource(id = R.drawable.bsecure),
                 contentDescription = "Bsecure",
-                tint = Color.Unspecified,
-                modifier = Modifier.size(80.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(60.dp)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Divider(color = Color.Gray, thickness = 1.dp)
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
-            Icon(
+            Image(
                 painter = painterResource(id = R.drawable.padlock), // Replace with your lock image resource
                 contentDescription = "Lock Icon",
-                tint = Color.Unspecified,
-                modifier = Modifier.size(150.dp)
+                modifier = Modifier.size(225.dp)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Text(
                 text = "Lupa Password?",

@@ -1,5 +1,6 @@
 package com.mawar.bsecure.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -34,6 +35,8 @@ fun RegisterScreen() {
             .padding(top = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(10.dp))
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -43,15 +46,15 @@ fun RegisterScreen() {
                     painter = painterResource(id = R.drawable.back1),
                     contentDescription = "Back",
                     tint = Color.Unspecified,
-                    modifier = Modifier.size(50.dp)
+                    modifier = Modifier.size(80.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.width(110.dp))
+            Spacer(modifier = Modifier.width(100.dp))
 
             Text(
                 text = "Daftar",
-                fontSize = 24.sp,
+                fontSize = 32.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
@@ -63,15 +66,28 @@ fun RegisterScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
-                .padding(horizontal = 32.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 32.dp, vertical = 16.dp)
         ) {
-            Icon(
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Image(
                 painter = painterResource(id = R.drawable.bsecure),
                 contentDescription = "Bsecure",
-                tint = Color.Unspecified,
                 modifier = Modifier
-                    .size(200.dp)
+                    .fillMaxWidth()
+                    .size(60.dp)
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Divider(color = Color.Gray, thickness = 1.dp)
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Text(
+                text = "Masukkan email Anda",
+                fontSize = 14.sp,
+                color = Color.Black
             )
 
             OutlinedTextField(
@@ -85,6 +101,7 @@ fun RegisterScreen() {
 
 
             Spacer(modifier = Modifier.height(16.dp))
+
 
             OutlinedTextField(
                 value = username,
@@ -128,54 +145,58 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Sudah punya akun? Masuk sekarang!",
-                fontSize = 14.sp,
-                color = Color(0xFFB285D4),
-                modifier = Modifier.clickable { /* Handle login click */ }
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer(modifier = Modifier.height(10.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Divider(
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(1.dp)
-                )
                 Text(
-                    text = " atau ",
+                    text = "Sudah punya akun? Masuk sekarang!",
                     fontSize = 14.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    color = Color(0xFFB285D4),
+                    modifier = Modifier.clickable { /* Handle login click */ }
                 )
-                Divider(
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(1.dp)
-                )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "Google",
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { /* Handle Google sign-in */ }
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Divider(
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(1.dp)
+                    )
+                    Text(
+                        text = " atau ",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    Divider(
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(1.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.google),
+                        contentDescription = "Google",
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable { /* Handle Google sign-in */ }
+                    )
+                }
             }
         }
     }

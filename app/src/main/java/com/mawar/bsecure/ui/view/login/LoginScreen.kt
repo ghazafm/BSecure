@@ -32,19 +32,19 @@ fun LoginScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF5A2D82)) // Background color for the top part
-            .padding(top = 50.dp),
+            .padding(top = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         Text(
             text = "Masuk",
-            fontSize = 24.sp,
+            fontSize = 32.sp,
             color = Color.White,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(80.dp))
 
         Column(
             modifier = Modifier
@@ -57,7 +57,7 @@ fun LoginScreen() {
 
             Image(
                 painter = painterResource(id = R.drawable.bsecure),
-                contentDescription = "Facebook",
+                contentDescription = "Bsecure",
                 modifier = Modifier
                     .fillMaxWidth()
                     .size(80.dp)
@@ -65,17 +65,7 @@ fun LoginScreen() {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Divider(
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(1.dp)
-                )
-            }
+            Divider(color = Color.Gray, thickness = 1.dp)
 
             Spacer(modifier = Modifier.height(30.dp))
 
@@ -132,12 +122,8 @@ fun LoginScreen() {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Divider(
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(1.dp)
-                )
+                Divider(color = Color.Gray, thickness = 1.dp)
+
                 Text(
                     text = " atau ",
                     fontSize = 14.sp,
@@ -145,12 +131,8 @@ fun LoginScreen() {
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
-                Divider(
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(1.dp)
-                )
+
+                Divider(color = Color.Gray, thickness = 1.dp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
