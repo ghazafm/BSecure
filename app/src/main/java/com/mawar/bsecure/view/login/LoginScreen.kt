@@ -1,5 +1,4 @@
-package com.mawar.bsecure.view.login
-
+package com.mawar.bsecure.login
 
 
 import androidx.compose.foundation.Image
@@ -33,9 +32,10 @@ fun LoginScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF5A2D82)) // Background color for the top part
-            .padding(top = 0.dp),
+            .padding(top = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(30.dp))
 
         Text(
             text = "Masuk",
@@ -53,17 +53,31 @@ fun LoginScreen() {
                 .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                painter = painterResource(id = R.drawable.bsecure),
                 contentDescription = "Facebook",
                 modifier = Modifier
                     .fillMaxWidth()
                     .size(80.dp)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Divider(
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(1.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(30.dp))
 
             OutlinedTextField(
                 value = email,
@@ -146,30 +160,12 @@ fun LoginScreen() {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.apple),
-                    contentDescription = "Apple",
-                    tint = Color.Unspecified, // This prevents any tint from being applied
-
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { /* Handle Apple sign-in */ }
-                )
-                Icon(
                     painter = painterResource(id = R.drawable.google),
                     contentDescription = "Google",
                     tint = Color.Unspecified, // This prevents any tint from being applied
                     modifier = Modifier
                         .size(40.dp)
                         .clickable { /* Handle Apple sign-in */ }
-                )
-
-                Icon(
-                    painter = painterResource(id = R.drawable.facebook),
-                    contentDescription = "Facebook",
-                    tint = Color.Unspecified, // This prevents any tint from being applied
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { /* Handle Facebook sign-in */ }
                 )
             }
         }

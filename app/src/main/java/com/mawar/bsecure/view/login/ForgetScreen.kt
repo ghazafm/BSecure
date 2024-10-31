@@ -31,7 +31,7 @@ fun ForgotPasswordScreen() {
     ) {
         IconButton(onClick = { /* Handle back button click */ }) {
             Icon(
-                painter = painterResource(id = R.drawable.back),
+                painter = painterResource(id = R.drawable.back1),
                 contentDescription = "Back",
                 tint = Color.White
             )
@@ -67,7 +67,7 @@ fun ForgotPasswordScreen() {
             Spacer(modifier = Modifier.height(20.dp))
 
             Icon(
-                painter = painterResource(id = R.drawable.padlock.png), // Replace with your lock image resource
+                painter = painterResource(id = R.drawable.padlock), // Replace with your lock image resource
                 contentDescription = "Lock Icon",
                 tint = Color.Unspecified,
                 modifier = Modifier.size(150.dp)
