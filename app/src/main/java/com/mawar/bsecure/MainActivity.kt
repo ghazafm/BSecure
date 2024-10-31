@@ -3,45 +3,21 @@ package com.mawar.bsecure
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.mawar.bsecure.ui.theme.BSecureTheme
+import androidx.activity.viewModels
+import com.mawar.bsecure.repository.SosRepository
+import com.mawar.bsecure.ui.SosScreen
+import com.mawar.bsecure.ui.viewModel.sos.SosViewModel
+import com.mawar.bsecure.ui.viewModel.sos.SosViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        val repository = SosRepository()
+
+        val viewModel: SosViewModel by viewModels { SosViewModelFactory(repository) }
+
         setContent {
-            BSecureTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            SosScreen(viewModel = viewModel)
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BSecureTheme {
-        Greeting("Android")
     }
 }
