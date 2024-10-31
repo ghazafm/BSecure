@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.mawar.bsecure.viewModel.UserViewModel
 
 @Composable
 fun UserScreen(userId: String, viewModel: UserViewModel = hiltViewModel()) {
