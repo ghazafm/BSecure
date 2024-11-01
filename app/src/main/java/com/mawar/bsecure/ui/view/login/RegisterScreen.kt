@@ -82,11 +82,11 @@ fun RegisterScreen() {
 
             Divider(color = Color.Gray, thickness = 1.dp)
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             Text(
                 text = "Masukkan email Anda",
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 color = Color.Black
             )
 
@@ -99,9 +99,13 @@ fun RegisterScreen() {
                     .fillMaxWidth()
             )
 
-
             Spacer(modifier = Modifier.height(16.dp))
 
+            Text(
+                text = "Masukkan username Anda",
+                fontSize = 16.sp,
+                color = Color.Black
+            )
 
             OutlinedTextField(
                 value = username,
@@ -145,15 +149,24 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = Modifier.height(10.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally)
+            {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Sudah punya akun? ",
+                        fontSize = 14.sp,
+                        color = Color.Black
+                    )
 
-                Text(
-                    text = "Sudah punya akun? Masuk sekarang!",
-                    fontSize = 14.sp,
-                    color = Color(0xFFB285D4),
-                    modifier = Modifier.clickable { /* Handle login click */ }
-                )
+                    Text(
+                        text = "Masuk sekarang!",
+                        fontSize = 14.sp,
+                        color = Color(0xFFB285D4),
+                        modifier = Modifier.clickable { /* Handle login click */ }
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 

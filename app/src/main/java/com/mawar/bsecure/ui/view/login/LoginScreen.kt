@@ -50,11 +50,8 @@ fun LoginScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
-                .padding(horizontal = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 32.dp, vertical = 30.dp)
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
-
             Image(
                 painter = painterResource(id = R.drawable.bsecure),
                 contentDescription = "Bsecure",
@@ -67,9 +64,15 @@ fun LoginScreen() {
 
             Divider(color = Color.Gray, thickness = 1.dp)
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(35.dp))
 
-            OutlinedTextField(
+            Text(
+                text = "Masukkan email Anda",
+                fontSize = 16.sp,
+                color = Color.Black
+            )
+
+            TextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Masukkan email/username Anda") },
@@ -109,46 +112,70 @@ fun LoginScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Belum punya akun? Daftar sekarang!",
-                fontSize = 14.sp,
-                color = Color(0xFFB285D4),
-                modifier = Modifier.clickable { /* Handle register click */ }
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally)
+            {
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Belum punya akun? ",
+                        fontSize = 14.sp,
+                        color = Color.Black
+                    )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Divider(color = Color.Gray, thickness = 1.dp)
+                    Text(
+                        text = "Daftar sekarang!",
+                        fontSize = 14.sp,
+                        color = Color(0xFFB285D4),
+                        modifier = Modifier.clickable { /* Handle register click */ }
+                    )
+                }
 
-                Text(
-                    text = " atau ",
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                Divider(color = Color.Gray, thickness = 1.dp)
-            }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Divider(
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(1.dp)
+                    )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = " atau ",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "Google",
-                    tint = Color.Unspecified, // This prevents any tint from being applied
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { /* Handle Apple sign-in */ }
-                )
+                    Divider(
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(1.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.google),
+                        contentDescription = "Google",
+                        tint = Color.Unspecified, // This prevents any tint from being applied
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable { /* Handle Apple sign-in */ }
+                    )
+                }
             }
         }
     }
