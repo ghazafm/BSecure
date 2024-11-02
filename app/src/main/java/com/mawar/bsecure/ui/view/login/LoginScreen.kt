@@ -31,11 +31,11 @@ fun LoginScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF5A2D82)) // Background color for the top part
+            .background(Color(0xFF5A2D82))
             .padding(top = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Text(
             text = "Masuk",
@@ -44,7 +44,7 @@ fun LoginScreen() {
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         Column(
             modifier = Modifier
@@ -62,7 +62,7 @@ fun LoginScreen() {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            Divider(color = Color.Gray, thickness = 1.dp)
+            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
 
             Spacer(modifier = Modifier.height(35.dp))
 
@@ -138,11 +138,11 @@ fun LoginScreen() {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Divider(
-                        color = Color.Gray,
+                    HorizontalDivider(
                         modifier = Modifier
                             .weight(1f)
-                            .height(1.dp)
+                            .height(1.dp),
+                        color = Color.Gray
                     )
 
                     Text(
@@ -153,11 +153,11 @@ fun LoginScreen() {
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
 
-                    Divider(
-                        color = Color.Gray,
+                    HorizontalDivider(
                         modifier = Modifier
                             .weight(1f)
-                            .height(1.dp)
+                            .height(1.dp),
+                        color = Color.Gray
                     )
                 }
 
@@ -170,7 +170,7 @@ fun LoginScreen() {
                     Icon(
                         painter = painterResource(id = R.drawable.google),
                         contentDescription = "Google",
-                        tint = Color.Unspecified, // This prevents any tint from being applied
+                        tint = Color.Unspecified,
                         modifier = Modifier
                             .size(40.dp)
                             .clickable { /* Handle Apple sign-in */ }

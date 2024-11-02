@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,9 +32,10 @@ fun RegisterScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF5A2D82)) // Background color for the top part
+            .background(Color(0xFF5A2D82))
             .padding(top = 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -41,16 +43,25 @@ fun RegisterScreen() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
+            Spacer(modifier = Modifier.width(8.dp))
+
             IconButton(onClick = { /* Handle back button click */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.back1),
-                    contentDescription = "Back",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(80.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(color = Color(0xFF9C43F5), shape = CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_arrow_back_ios_new_24),
+                        contentDescription = "Back",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.width(100.dp))
+            Spacer(modifier = Modifier.width(90.dp))
 
             Text(
                 text = "Daftar",
@@ -80,7 +91,7 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            Divider(color = Color.Gray, thickness = 1.dp)
+            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
 
             Spacer(modifier = Modifier.height(25.dp))
 
@@ -174,11 +185,11 @@ fun RegisterScreen() {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Divider(
-                        color = Color.Gray,
+                    HorizontalDivider(
                         modifier = Modifier
                             .weight(1f)
-                            .height(1.dp)
+                            .height(1.dp),
+                        color = Color.Gray
                     )
                     Text(
                         text = " atau ",
@@ -187,11 +198,11 @@ fun RegisterScreen() {
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
-                    Divider(
-                        color = Color.Gray,
+                    HorizontalDivider(
                         modifier = Modifier
                             .weight(1f)
-                            .height(1.dp)
+                            .height(1.dp),
+                        color = Color.Gray
                     )
                 }
 

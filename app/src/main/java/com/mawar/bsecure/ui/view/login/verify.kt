@@ -33,7 +33,7 @@ fun VerifyScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF5A2D82)) // Background color for the top part
+            .background(Color(0xFF5A2D82))
             .padding(top = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -43,16 +43,25 @@ fun VerifyScreen() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
+            Spacer(modifier = Modifier.width(8.dp))
+
             IconButton(onClick = { /* Handle back button click */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.back1),
-                    contentDescription = "Back",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(80.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(color = Color(0xFF9C43F5), shape = CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_arrow_back_ios_new_24),
+                        contentDescription = "Back",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.width(80.dp))
+            Spacer(modifier = Modifier.width(70.dp))
 
             Text(
                 text = "Verifikasi",
@@ -83,12 +92,12 @@ fun VerifyScreen() {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            Divider(color = Color.Gray, thickness = 1.dp)
+            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
 
             Spacer(modifier = Modifier.height(30.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.verify), // Replace with your lock image resource
+                painter = painterResource(id = R.drawable.verify),
                 contentDescription = "Lock Icon",
                 modifier = Modifier.size(225.dp)
             )
