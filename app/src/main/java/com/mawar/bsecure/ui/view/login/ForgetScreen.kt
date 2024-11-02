@@ -86,7 +86,7 @@ fun ForgotPasswordScreen() {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
+            HorizontalDivider(thickness = 0.5.dp, color = Color.Gray)
 
             Spacer(modifier = Modifier.height(30.dp))
 

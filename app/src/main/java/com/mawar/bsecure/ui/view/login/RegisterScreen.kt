@@ -91,7 +91,7 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
+            HorizontalDivider(thickness = 0.5.dp, color = Color.Gray)
 
             Spacer(modifier = Modifier.height(25.dp))
 
@@ -189,6 +189,7 @@ fun RegisterScreen() {
                         modifier = Modifier
                             .weight(1f)
                             .height(1.dp),
+                        thickness = 0.5.dp,
                         color = Color.Gray
                     )
                     Text(
@@ -202,6 +203,7 @@ fun RegisterScreen() {
                         modifier = Modifier
                             .weight(1f)
                             .height(1.dp),
+                        thickness = 0.5.dp,
                         color = Color.Gray
                     )
                 }
