@@ -55,7 +55,7 @@ fun ForgotPasswordScreen() {
                 }
             }
 
-            Spacer(modifier = Modifier.width(40.dp))
+            Spacer(modifier = Modifier.weight(0.5f))
 
             Text(
                 text = "Lupa Password",
@@ -63,6 +63,8 @@ fun ForgotPasswordScreen() {
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.weight(1f))
         }
 
         Spacer(modifier = Modifier.height(30.dp))

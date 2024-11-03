@@ -10,7 +10,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mawar.bsecure.R
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Preview
 @Composable
 fun VerifyScreen() {
@@ -29,6 +34,11 @@ fun VerifyScreen() {
     var otp2 by remember { mutableStateOf(TextFieldValue("")) }
     var otp3 by remember { mutableStateOf(TextFieldValue("")) }
     var otp4 by remember { mutableStateOf(TextFieldValue("")) }
+
+    val focusRequester1 = remember { FocusRequester() }
+    val focusRequester2 = remember { FocusRequester() }
+    val focusRequester3 = remember { FocusRequester() }
+    val focusRequester4 = remember { FocusRequester() }
 
     Column(
         modifier = Modifier
@@ -61,7 +71,7 @@ fun VerifyScreen() {
                 }
             }
 
-            Spacer(modifier = Modifier.width(70.dp))
+            Spacer(modifier = Modifier.weight(0.65f))
 
             Text(
                 text = "Verifikasi",
@@ -69,6 +79,8 @@ fun VerifyScreen() {
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.weight(1f))
         }
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -92,7 +104,7 @@ fun VerifyScreen() {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            HorizontalDivider(thickness = 0.5.dp, color = Color.Gray)
+            Divider(thickness = 0.5.dp, color = Color.Gray)
 
             Spacer(modifier = Modifier.height(30.dp))
 
@@ -136,10 +148,27 @@ fun VerifyScreen() {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                OTPTextField(value = otp1, onValueChange = { otp1 = it })
-                OTPTextField(value = otp2, onValueChange = { otp2 = it })
-                OTPTextField(value = otp3, onValueChange = { otp3 = it })
-                OTPTextField(value = otp4, onValueChange = { otp4 = it })
+                OTPTextField(value = otp1, onValueChange = {
+                    otp1 = limitToOneDigit(it)
+                    if (otp1.text.isNotEmpty()) focusRequester2.requestFocus()
+                }, focusRequester = focusRequester1)
+
+                OTPTextField(value = otp2, onValueChange = {
+                    otp2 = limitToOneDigit(it)
+                    if (otp2.text.isNotEmpty()) focusRequester3.requestFocus()
+                    else focusRequester1.requestFocus()
+                }, focusRequester = focusRequester2)
+
+                OTPTextField(value = otp3, onValueChange = {
+                    otp3 = limitToOneDigit(it)
+                    if (otp3.text.isNotEmpty()) focusRequester4.requestFocus()
+                    else focusRequester2.requestFocus()
+                }, focusRequester = focusRequester3)
+
+                OTPTextField(value = otp4, onValueChange = {
+                    otp4 = limitToOneDigit(it)
+                    if (otp4.text.isEmpty()) focusRequester3.requestFocus()
+                }, focusRequester = focusRequester4)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -166,14 +195,15 @@ fun VerifyScreen() {
 }
 
 @Composable
-fun OTPTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
+fun OTPTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, focusRequester: FocusRequester) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier
             .size(60.dp)
             .padding(horizontal = 4.dp)
-            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
+            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+            .focusRequester(focusRequester),
         textStyle = LocalTextStyle.current.copy(
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
@@ -182,4 +212,9 @@ fun OTPTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit)
         singleLine = true,
         visualTransformation = VisualTransformation.None
     )
+}
+
+// Helper function to limit input to one digit
+fun limitToOneDigit(textFieldValue: TextFieldValue): TextFieldValue {
+    return if (textFieldValue.text.length <= 1) textFieldValue else TextFieldValue(textFieldValue.text.take(1))
 }

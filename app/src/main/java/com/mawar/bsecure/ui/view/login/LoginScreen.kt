@@ -66,13 +66,8 @@ fun LoginScreen() {
 
             Spacer(modifier = Modifier.height(35.dp))
 
-            Text(
-                text = "Masukkan email Anda",
-                fontSize = 16.sp,
-                color = Color.Black
-            )
 
-            TextField(
+            OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Masukkan email/username Anda") },

@@ -61,7 +61,7 @@ fun RegisterScreen() {
                 }
             }
 
-            Spacer(modifier = Modifier.width(90.dp))
+            Spacer(modifier = Modifier.weight(0.65f))
 
             Text(
                 text = "Daftar",
@@ -69,6 +69,8 @@ fun RegisterScreen() {
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.weight(1f))
         }
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -95,12 +97,6 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(25.dp))
 
-            Text(
-                text = "Masukkan email Anda",
-                fontSize = 16.sp,
-                color = Color.Black
-            )
-
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -111,12 +107,6 @@ fun RegisterScreen() {
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Masukkan username Anda",
-                fontSize = 16.sp,
-                color = Color.Black
-            )
 
             OutlinedTextField(
                 value = username,
