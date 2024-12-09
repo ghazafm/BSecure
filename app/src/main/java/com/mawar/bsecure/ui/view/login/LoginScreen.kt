@@ -1,11 +1,9 @@
 package com.mawar.bsecure.login
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,16 +15,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.mawar.bsecure.R
+import com.mawar.bsecure.model.LoginModel
+import com.mawar.bsecure.model.AppUser
+import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
-@Preview
+
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
+    var isLoading by remember { mutableStateOf(false) }
+    var loginError by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -94,18 +100,49 @@ fun LoginScreen() {
                 text = "Lupa password Anda?",
                 fontSize = 14.sp,
                 color = Color(0xFFB285D4),
-                modifier = Modifier.align(Alignment.End).clickable { /* Handle forgot password */ }
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable { navController.navigate("forget") }
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Assuming appUser is the fetched user data from Firestore
             Button(
-                onClick = { /* Handle login click */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5A2D82)),
-                modifier = Modifier.fillMaxWidth()
+                onClick = {
+                    isLoading = true
+                    coroutineScope.launch {
+                        val appUser = loginModel.login(email.text, password.text)
+                        isLoading = false
+                        if (appUser != null) {
+                            // Debug log for login result
+                            println("Login result: appUser = ${appUser.username}, ${appUser.email}")
+
+                            if (appUser.username.isNotEmpty() && appUser.email.isNotEmpty()) {
+                                // Encode the profile picture URL
+                                val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
+                                navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl")
+                            } else {
+                                loginError = "Login failed. User data is incomplete."
+                            }
+                        } else {
+                            loginError = "Login failed. Please check your credentials."
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
             ) {
-                Text(text = "Masuk", color = Color.White, fontSize = 16.sp)
+                if (isLoading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Text(text = "Masuk", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                }
             }
+
+
+
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -113,7 +150,7 @@ fun LoginScreen() {
                 text = "Belum punya akun? Daftar sekarang!",
                 fontSize = 14.sp,
                 color = Color(0xFFB285D4),
-                modifier = Modifier.clickable { /* Handle register click */ }
+                modifier = Modifier.clickable { navController.navigate("register") }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -144,12 +181,26 @@ fun LoginScreen() {
                 Icon(
                     painter = painterResource(id = R.drawable.google),
                     contentDescription = "Google",
-                    tint = Color.Unspecified, // This prevents any tint from being applied
+                    tint = Color.Unspecified,
                     modifier = Modifier
                         .size(40.dp)
-                        .clickable { /* Handle Apple sign-in */ }
+                        .clickable {
+                            loginModel.signInWithGoogle(
+                                onSuccess = { appUser ->
+                                    // Encode the profile picture URL
+                                    val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
+                                    navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl")
+                                },
+                                onFailure = { e ->
+                                    loginError = "Google sign-in failed: ${e.message}"
+                                    e.printStackTrace()
+                                }
+                            )
+                        } // Calls Google sign-in
                 )
             }
         }
     }
 }
+
+
