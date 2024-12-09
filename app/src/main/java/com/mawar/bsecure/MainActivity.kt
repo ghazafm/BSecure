@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+<<<<<<< Updated upstream
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -29,6 +30,16 @@ import com.mawar.bsecure.ui.view.profile.ProfileScreen
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+=======
+import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.mawar.bsecure.ui.view.fakecall.TimerScreen
+import com.mawar.bsecure.ui.viewModel.fakecall.TimerViewModel
+import com.mawar.bsecure.ui.view.fakecall.IncomingCallScreen
+>>>>>>> Stashed changes
 
 class MainActivity : ComponentActivity() {
     private lateinit var loginModel: LoginModel
@@ -40,6 +51,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+<<<<<<< Updated upstream
 
         phoneAuthRepository = PhoneAuthRepository()
 
@@ -76,6 +88,26 @@ class MainActivity : ComponentActivity() {
             BSecureTheme {
                 AppNavigation(loginModel, authRepository, googleSignInLauncher,userDetailsState,phoneAuthRepository)
             }
+=======
+        setContent {
+            MyApp()
+        }
+    }
+}
+
+@Composable
+fun MyApp() {
+    val navController = rememberNavController()
+    val timerViewModel: TimerViewModel = viewModel()
+
+    NavHost(navController = navController, startDestination = "timer_screen") {
+        composable("timer_screen") {
+            TimerScreen(navController = navController, timerViewModel = timerViewModel)
+        }
+        composable("incoming_call/{contactName}") { backStackEntry ->
+            val contactName = backStackEntry.arguments?.getString("contactName") ?: "Nama Tidak Diketahui"
+            IncomingCallScreen(contactName = contactName)
+>>>>>>> Stashed changes
         }
     }
 }
