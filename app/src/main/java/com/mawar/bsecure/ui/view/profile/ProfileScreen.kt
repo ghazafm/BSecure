@@ -19,11 +19,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.mawar.bsecure.R
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
-fun ProfileScreen(userName: String, email: String, profilePictureUrl: String) {
+fun ProfileScreen(navController: NavHostController, userName: String, email: String, profilePictureUrl: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -108,20 +111,26 @@ fun ProfileScreen(userName: String, email: String, profilePictureUrl: String) {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            ProfileOption("Ubah Profil")
-            ProfileOption("Terhubung Dengan Kami")
-            ProfileOption("Kebijakan")
-            ProfileOption("Bahasa")
+            ProfileOption("Ubah Profil"){
+                val encodedProfilePictureUrl = URLEncoder.encode(profilePictureUrl, StandardCharsets.UTF_8.toString())
+                navController.navigate("edit_profile/$userName/$email/$encodedProfilePictureUrl")
+            }
+            ProfileOption("Terhubung Dengan Kami"){
+                navController.navigate("contact")
+            }
+            ProfileOption("Kebijakan"){
+                navController.navigate("kebijakan")
+            }
         }
     }
 }
 
 @Composable
-fun ProfileOption(text: String) {
+fun ProfileOption(text: String, onClick: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle option click */ }
+            .clickable { onClick() }
     ) {
         Row(
             modifier = Modifier

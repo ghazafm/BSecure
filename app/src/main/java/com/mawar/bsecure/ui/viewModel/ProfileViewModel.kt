@@ -1,22 +1,19 @@
-package com.mawar.bsecure.ui.viewModel
-
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.mawar.bsecure.repository.UserRepository
-import com.mawar.bsecure.model.AppUser // Change this import
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import com.mawar.bsecure.model.AppUser
 
-class ProfileViewModel(private val userRepository: UserRepository) : ViewModel() {
+class ProfileViewModel : ViewModel() {
+    // Mutable state for holding the user profile
+    var userProfile = mutableStateOf<AppUser?>(null)
+        private set
 
-    private val _userData = MutableStateFlow<AppUser?>(null) // Change type
-    val userData = _userData.asStateFlow()
+    // Method to update the user profile data
+    fun updateUserProfile(name: String, email: String, profilePictureUrl: String) {
+        userProfile.value = AppUser(name, email, profilePictureUrl)
+    }
 
-    fun fetchUserData(uid: String) {
-        viewModelScope.launch {
-            val user = userRepository.getUserData(uid)
-            _userData.value = user
-        }
+    // Method to set the initial profile data after login
+    fun setInitialUserProfile(user: AppUser) {
+        userProfile.value = user
     }
 }
