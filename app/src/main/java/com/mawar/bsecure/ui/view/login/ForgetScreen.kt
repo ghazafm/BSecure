@@ -1,6 +1,5 @@
 package com.mawar.bsecure.ui.view.login
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -18,19 +16,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.mawar.bsecure.R
-import com.mawar.bsecure.model.sendPasswordResetEmail
 
+@Preview
 @Composable
-fun ForgotScreen(navController: NavController) {
+fun ForgotPasswordScreen() {
     var email by remember { mutableStateOf(TextFieldValue("")) }
-    val context = LocalContext.current // Get the current context
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF5A2D82))
+            .background(Color(0xFF5A2D82)) // Background color for the top part
             .padding(top = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -40,7 +36,7 @@ fun ForgotScreen(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { /* Handle back button click */ }) {
                 Icon(
                     painter = painterResource(id = R.drawable.back1),
                     contentDescription = "Back",
@@ -85,7 +81,7 @@ fun ForgotScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(30.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.padlock),
+                painter = painterResource(id = R.drawable.padlock), // Replace with your lock image resource
                 contentDescription = "Lock Icon",
                 modifier = Modifier.size(225.dp)
             )
@@ -122,30 +118,12 @@ fun ForgotScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
-                onClick = {
-                    val emailText = email.text
-                    if (emailText.isNotEmpty()) {
-                        sendPasswordResetEmail(
-                            context = context,
-                            email = emailText,
-                            onSuccess = {
-                                Toast.makeText(context, "Email reset password berhasil dikirim", Toast.LENGTH_SHORT).show()
-                            },
-                            onFailure = { e ->
-                                Toast.makeText(context, "Gagal mengirim email reset: ${e.message}", Toast.LENGTH_SHORT).show()
-                            },
-                            updateFirestoreAfterReset = true // Enable Firestore update
-                        )
-                    } else {
-                        Toast.makeText(context, "Masukkan email terlebih dahulu", Toast.LENGTH_SHORT).show()
-                    }
-                },
+                onClick = { /* Handle send button click */ },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5A2D82)),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Kirim URL Verifikasi", color = Color.White, fontSize = 16.sp)
+                Text(text = "Kirim", color = Color.White, fontSize = 16.sp)
             }
-
         }
     }
 }
