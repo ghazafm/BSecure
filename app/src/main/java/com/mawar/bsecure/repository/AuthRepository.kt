@@ -1,9 +1,7 @@
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.mawar.bsecure.model.AppUser
+import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -91,7 +89,51 @@ class AuthRepository {
             return false
         }
     }
+    suspend fun updateProfile(
+        name: String,
+        email: String,
+        profilePictureUrl: String,
+        phoneNumber: String
+    ): Boolean {
+        val uid = firebaseAuth.currentUser?.uid ?: return false
+        return try {
+            val userUpdates = mapOf(
+                "username" to name,
+                "email" to email,
+                "profilePictureUrl" to profilePictureUrl, // Include profile picture URL
+                "phoneNumber" to phoneNumber
+            )
+            firestore.collection("users").document(uid).update(userUpdates).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
 
+
+    suspend fun getUserProfile(): AppUser? {
+        val uid = firebaseAuth.currentUser?.uid ?: return null
+        return try {
+            val document = firestore.collection("users").document(uid).get().await()
+            if (document.exists()) {
+                val data = document.data
+                AppUser(
+                    uid = uid,
+                    email = data?.get("email") as String,
+                    username = data["username"] as String,
+                    profilePictureUrl = data["profilePictureUrl"] as String,
+                    phoneNumber = data["phoneNumber"] as String
+
+                )
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     fun logout() {
         firebaseAuth.signOut()

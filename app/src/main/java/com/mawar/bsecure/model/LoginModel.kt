@@ -37,6 +37,7 @@ class LoginModel(
                 .build()
         )
     }
+
     suspend fun login(email: String, password: String): AppUser? {
         return try {
             val authResult = auth.signInWithEmailAndPassword(email, password).await()
@@ -100,22 +101,38 @@ class LoginModel(
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     user?.let {
-                        // Store user data in Firestore
-                        storeUserDataInFirestore(
-                            uid = it.uid,
-                            email = it.email ?: "",
-                            displayName = it.displayName ?: "",
-                            profilePictureUrl = it.photoUrl?.toString() ?: ""
-                        )
-
-                        // Retrieve the username from Firestore
+                        // Ambil data pengguna dari Firestore
                         firestore.collection("users").document(it.uid).get()
                             .addOnSuccessListener { document ->
                                 val appUser = document.toObject(AppUser::class.java)
                                 if (appUser != null) {
-                                    onSuccess(appUser) // Pass the full AppUser object
+                                    // Jika pengguna sudah ada, perbarui data mereka
+                                    storeUserDataInFirestore(
+                                        uid = it.uid,
+                                        email = it.email ?: "",
+                                        displayName = it.displayName ?: "",
+                                        profilePictureUrl = it.photoUrl?.toString() ?: "",
+                                        phoneNumber = appUser.phoneNumber // Ambil nomor telepon yang ada
+                                    )
+                                    onSuccess(appUser) // Pass the full AppUser  object
                                 } else {
-                                    onFailure(Exception("User data is missing"))
+                                    // Jika pengguna tidak ada, simpan data baru
+                                    storeUserDataInFirestore(
+                                        uid = it.uid,
+                                        email = it.email ?: "",
+                                        displayName = it.displayName ?: "",
+                                        profilePictureUrl = it.photoUrl?.toString() ?: "",
+                                        phoneNumber = "" // atau null jika tidak ada
+                                    )
+                                    onSuccess(
+                                        AppUser(
+                                            it.uid,
+                                            it.email ?: "",
+                                            it.displayName ?: "",
+                                            it.photoUrl?.toString() ?: "",
+                                            ""
+                                        )
+                                    )
                                 }
                             }
                             .addOnFailureListener { e ->
@@ -130,26 +147,25 @@ class LoginModel(
             }
     }
 
-
-
-
     private fun storeUserDataInFirestore(
         uid: String,
         email: String,
         displayName: String,
-        profilePictureUrl: String
+        profilePictureUrl: String,
+        phoneNumber: String // Tambahkan parameter untuk nomor telepon
     ) {
         val userData = hashMapOf(
             "uid" to uid,
             "email" to email,
             "username" to displayName,
-            "profilePictureUrl" to profilePictureUrl
+            "profilePictureUrl" to profilePictureUrl,
+            "phoneNumber" to phoneNumber // Simpan nomor telepon di sini
         )
 
         firestore.collection("users").document(uid)
             .set(userData)
-            .addOnSuccessListener { Log.d("Firestore", "User data stored successfully.") }
+            .addOnSuccessListener { Log.d("Firestore", "User  data stored successfully.") }
             .addOnFailureListener { e -> Log.e("Firestore", "Error storing user data", e) }
-    }}
-
+    }
+}
 

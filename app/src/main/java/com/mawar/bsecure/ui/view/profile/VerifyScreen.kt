@@ -1,4 +1,4 @@
-package com.mawar.bsecure.ui.view.login
+package com.mawar.bsecure.ui.view.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -106,7 +106,7 @@ fun VerifyScreen() {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Empat digit kode OTP sudah dikirim ke emailmu!",
+                text = "Empat digit kode OTP sudah dikirim ke nomormu!",
                 fontSize = 14.sp,
                 color = Color.Gray,
                 textAlign = TextAlign.Center
