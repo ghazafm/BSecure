@@ -27,7 +27,11 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
+<<<<<<< Updated upstream
       <SelectionState runConfigName="Android.BSecure.app">
+=======
+      <SelectionState runConfigName="MainActivity">
+>>>>>>> Stashed changes
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

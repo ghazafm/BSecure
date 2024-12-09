@@ -73,9 +73,17 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+<<<<<<< Updated upstream
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.database.ktx)
+=======
+    implementation(libs.firebase.firestore)
+    implementation(libs.support.annotations)
+    implementation(libs.firebase.auth.ktx)
+
+    // Dependencies untuk testing
+>>>>>>> Stashed changes
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,5 +94,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.compose.material3:material3:1.1.0-alpha03")
+<<<<<<< Updated upstream
     implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
 }
+=======
+
+
+}
+>>>>>>> Stashed changes
