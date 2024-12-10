@@ -26,7 +26,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Composable
-fun ProfileScreen(navController: NavHostController, userName: String, email: String, profilePictureUrl: String) {
+fun ProfileScreen(navController: NavHostController, userName: String, email: String, profilePictureUrl: String, uid: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -120,6 +120,9 @@ fun ProfileScreen(navController: NavHostController, userName: String, email: Str
             }
             ProfileOption("Kebijakan"){
                 navController.navigate("kebijakan")
+            }
+            ProfileOption("Community"){
+                navController.navigate("community/$uid")
             }
         }
     }
