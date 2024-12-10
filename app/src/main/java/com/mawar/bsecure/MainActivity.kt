@@ -8,29 +8,22 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
-import com.mawar.bsecure.login.LoginScreen
-import com.mawar.bsecure.login.RegisterScreen
 import com.mawar.bsecure.model.AppUser
 import com.mawar.bsecure.model.LoginModel
 import com.mawar.bsecure.navigation.AppNavigation
 import com.mawar.bsecure.repository.PhoneAuthRepository
 import com.mawar.bsecure.ui.theme.BSecureTheme
-import com.mawar.bsecure.ui.view.login.ForgotScreen
-import com.mawar.bsecure.ui.view.profile.EditProfileScreen
-import com.mawar.bsecure.ui.view.profile.ProfileScreen
-import java.net.URLDecoder
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
+import com.mawar.bsecure.ui.view.community.CommunityPostDetailScreen
+import com.mawar.bsecure.ui.view.community.CommunityScreen
 
 class MainActivity : ComponentActivity() {
+
     private lateinit var loginModel: LoginModel
     private lateinit var authRepository: AuthRepository
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
@@ -78,5 +71,24 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }
+
+//@Composable
+//fun MainScreen(navController: NavController) {
+//    var selectedPost by remember { mutableStateOf<Post?>(null) }
+//    if (selectedPost == null) {
+//        CommunityScreen(onPostClick = { post -> selectedPost = post },navController)
+//    } else {
+//        CommunityPostDetailScreen(
+//            post = selectedPost!!,
+//            comments = listOf(
+//                Post("Lukas Awan", "@LukasAwan", "Aplikasi ini sangat menarik dan sangat membantu!", "28s", R.drawable.user),
+//                Post("Lukas Awan", "@LukasAwan", "Aplikasi ini memiliki fitur yang sangat berguna!", "18s", R.drawable.user)
+//            )
+//        )
+//    }
+//}
+
+
 
