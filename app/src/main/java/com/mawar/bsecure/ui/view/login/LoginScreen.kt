@@ -1,5 +1,6 @@
 package com.mawar.bsecure.login
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -121,7 +122,7 @@ fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
                             if (appUser.username.isNotEmpty() && appUser.email.isNotEmpty()) {
                                 // Encode the profile picture URL
                                 val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
-                                navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl")
+                                navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl/${appUser.uid}")
                             } else {
                                 loginError = "Login failed. User data is incomplete."
                             }
@@ -188,8 +189,9 @@ fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
                             loginModel.signInWithGoogle(
                                 onSuccess = { appUser ->
                                     // Encode the profile picture URL
+                                    Log.d("LoginScreen", "Navigating to community screen with username: ${appUser.uid}")
                                     val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
-                                    navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl")
+                                    navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl/${appUser.uid}")
                                 },
                                 onFailure = { e ->
                                     loginError = "Google sign-in failed: ${e.message}"
