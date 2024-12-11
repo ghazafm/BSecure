@@ -209,6 +209,10 @@ fun CommunityPostItem(
 
 
                 }
+                Spacer(
+                    modifier = Modifier
+                        .width(8.dp)
+                )
                 Text(text = commentsCount.toString(),
                     color = Color.Gray,
                     fontSize = 12.sp,
@@ -224,7 +228,10 @@ fun CommunityPostItem(
                     )
 
                 }
-
+                Spacer(
+                    modifier = Modifier
+                        .width(8.dp)
+                )
                 Text(text = likesCount.toString(),
                     color = Color.Gray,
                     fontSize = 12.sp,
