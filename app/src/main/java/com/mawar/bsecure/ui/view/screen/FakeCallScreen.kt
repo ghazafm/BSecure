@@ -24,9 +24,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.mawar.bsecure.R
+import com.mawar.bsecure.model.sos.Sos
+import com.mawar.bsecure.repository.SosRepository
 import com.mawar.bsecure.ui.view.Beranda.Bottom
 import com.mawar.bsecure.ui.view.Beranda.TopBars
 import com.mawar.bsecure.ui.viewModel.fakeCall.TimerViewModel
+import com.mawar.bsecure.ui.viewModel.sos.SosViewModel
 
 import kotlinx.coroutines.launch
 
@@ -55,7 +58,7 @@ import kotlinx.coroutines.launch
         }
         Scaffold(
             topBar = { TopBars() },
-            bottomBar = {Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid)}
+            bottomBar = {Bottom(viewModel = SosViewModel(SosRepository()),navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid)}
         ) {
             innerPadding ->
             Box(
