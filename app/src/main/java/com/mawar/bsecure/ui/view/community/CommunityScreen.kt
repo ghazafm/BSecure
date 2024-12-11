@@ -51,7 +51,7 @@ fun CommunityScreen(onPostClick: (Post) -> Unit, onCommentClick: (Post) -> Unit,
                     navApp.navigate("addCommunity/$uid")
                 },
                 containerColor = MaterialTheme.colorScheme.primary, // Warna latar FAB
-                contentColor = Color.White // Warna konten (ikon) di dalam FAB
+                contentColor = Color(0xFF5A2D82) // Warna konten (ikon) di dalam FAB
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.add),
@@ -84,8 +84,6 @@ fun CommunityScreen(onPostClick: (Post) -> Unit, onCommentClick: (Post) -> Unit,
                     .fillMaxSize()
                 )
                 {
-
-
                     items(posts) { post ->
                         CommunityPostItem(
                             post = post,
@@ -93,21 +91,17 @@ fun CommunityScreen(onPostClick: (Post) -> Unit, onCommentClick: (Post) -> Unit,
                             onClick = { onPostClick(post) },
                             onLikeClick = { communityViewModel.toggleLike(post, uid) },
                             onCommentClick = { onCommentClick(post) },
-                            likesCount = communityViewModel.likesCount.collectAsState().value[post.id] ?: 0
-//                            commentCount = communityViewModel.commentCount.collectAsState().value[post.id] ?: 0
+                            likesCount = communityViewModel.likesCount.collectAsState().value[post.id] ?: 0,
+                            commentsCount = communityViewModel.commentsCount.collectAsState().value[post.id] ?: 0
                         )
                         Divider(thickness = 0.5.dp, color = Color.Gray)
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
             }
-
-
         }
     }
-
 }
-
 
 @Composable
 fun HeaderSection(navApp: NavController, title: String) {
@@ -156,7 +150,7 @@ fun CommunityPostItem(
     onLikeClick: (Post) -> Unit,
     onCommentClick: (Post) -> Unit,
     likesCount: Int,
-//    commentCount : Int
+    commentsCount : Int
 ) {
     Row(
         modifier = Modifier
@@ -212,7 +206,12 @@ fun CommunityPostItem(
                     Icon(painter = painterResource(id = R.drawable.outline_comment_24), contentDescription = "Comment")
 
                 }
-//                Text(text = commentCount.toString(), color = Color.Gray, fontSize = 12.sp)
+                Text(text = commentsCount.toString(),
+                    color = Color.Gray,
+                    fontSize = 12.sp,
+                    modifier = Modifier.offset(-30.dp)
+
+                )
 
                 IconButton(onClick = { onLikeClick(post) }) {
                     Icon(
@@ -231,23 +230,5 @@ fun CommunityPostItem(
                 Text(text = formatTimestamp(post.timestamp), color = Color.Gray, fontSize = 12.sp)
             }
         }
-    }
-}
-
-@Composable
-fun PostItemUserSection(profilePictureUrl: String?, username: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(
-            model = profilePictureUrl,
-            contentDescription = username,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(text = username, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-
     }
 }
