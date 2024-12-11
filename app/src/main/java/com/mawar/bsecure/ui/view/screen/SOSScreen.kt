@@ -1,7 +1,12 @@
 package com.mawar.bsecure.ui.view.screen
 
+import android.Manifest
 import android.content.Context
 import android.location.Location
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,23 +30,17 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,22 +50,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
+import com.google.android.gms.location.LocationServices
 import com.mawar.bsecure.data.emergency.EmergencyService
 import com.mawar.bsecure.data.emergency.EmergencyServiceData
-import com.mawar.bsecure.data.emergency.EmergencyServiceUtils
 import com.mawar.bsecure.data.emergency.FirestoreEmergencyService
 import com.mawar.bsecure.data.emergency.ServiceLocation
+import com.mawar.bsecure.ui.helper.LocationHelper.getLastKnownLocation
 import com.mawar.bsecure.ui.view.Beranda.Bottom
 import com.mawar.bsecure.ui.view.Beranda.TopBars
-import com.mawar.bsecure.ui.view.Beranda.floatBar
-
-import com.mawar.bsecure.ui.view.Beranda.floatNotif
-import kotlinx.coroutines.launch
 
 @Composable
 fun SOSScreen(
@@ -79,47 +74,99 @@ fun SOSScreen(
     val context = LocalContext.current
     val emergencyServices = EmergencyServiceData.getEmergencyServices()
     val showDialog = remember { mutableStateOf(false) }
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    var userLocation by remember { mutableStateOf<Location?>(null) }
+
+    // Permission launcher for runtime permissions
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                getLastKnownLocation(fusedLocationClient) {
+                    userLocation = it
+                    Log.d("LocationLog", "Lokasi terkini: ${userLocation}")
+
+                }
+            } else {
+                Toast.makeText(context, "Izin lokasi diperlukan untuk fitur ini", Toast.LENGTH_SHORT).show()
+                Log.d("salah","tidak dpat lokasi")
+            }
+        }
+    )
+
+    // Request location permission
+    LaunchedEffect(Unit) {
+        if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            getLastKnownLocation(fusedLocationClient) {
+                userLocation = it
+                Log.d("LocationLog", "Lokasi terkini: ${userLocation}")
+
+            }
+        } else {
+            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            Log.d("salah","tidak dpat lokasi")
+
+        }
+    }
 
     Scaffold(
         topBar = { TopBars() },
-        bottomBar = { Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid) }
-    ) {
-            innerPadding ->
+        bottomBar = { Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid = uid) }
+    ) { innerPadding ->
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
                 .background(Brush.verticalGradient(colors = listOf(Color(0xFFF1EFEF), Color(0x97C5BBBB))))
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Button(
-                    onClick = { showDialog.value = true },
-                    modifier = Modifier
-                        .size(150.dp),
+                    onClick = {
+                        showDialog.value = true
+                              },
+                    modifier = Modifier.size(150.dp),
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(Color.Red)
                 ) {
-                    Text("SOS", fontSize = 40.sp, color = Color.White)
+                    Text("SOS", fontSize = 40.sp, color = Color.White, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(40.dp))
-                val userLocation = Location("").apply {
-                    // Ganti dengan koordinat lokasi pengguna yang sebenarnya
-                    latitude = -7.980800
-                    longitude = 112.645500
+
+                if (userLocation != null) {
+                    Text("Lokasi Anda: ${userLocation!!.latitude}, ${userLocation!!.longitude}", fontSize = 16.sp)
+                } else {
+                    Text("Sedang mendapatkan lokasi...", fontSize = 16.sp, color = Color.Gray)
                 }
+
                 if (showDialog.value) {
-                    EmergencyServicesDialog(
-                        showDialog = showDialog,
-                        emergencyServices = emergencyServices,
-                        context = context,
-                        userLocation = userLocation
-                    )
+                    userLocation?.let {
+                        EmergencyServicesDialog(
+                            showDialog = showDialog,
+                            emergencyServices = emergencyServices,
+                            context = context,
+                            userLocation = it
+                        )
+                    }
                 }
             }
         }
     }
 }
+
+//fun getLastKnownLocation(
+//    fusedLocationClient: FusedLocationProviderClient,
+//    onLocationReceived: (Location?) -> Unit
+//) {
+//    fusedLocationClient.lastLocation.addOnCompleteListener { task: Task<Location> ->
+//        if (task.isSuccessful && task.result != null) {
+//            onLocationReceived(task.result)
+//        } else {
+//            onLocationReceived(null)
+//        }
+//    }
+//}
 
 
 

@@ -1,6 +1,9 @@
 package com.mawar.bsecure.ui.view.Beranda
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.icu.text.CaseMap.Title
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -58,11 +61,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
+import com.google.android.gms.location.LocationServices
 import com.mawar.bsecure.data.emergency.EmergencyServiceData
 import com.mawar.bsecure.ui.view.screen.EmergencyServicesDialog
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -166,9 +172,11 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
                 )
             )
         }
-        val showDialog = remember { mutableStateOf(false) }
         val context = LocalContext.current
-        val emergencyServices = EmergencyServiceData.getEmergencyServices()
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        val geocoder = Geocoder(context, Locale.getDefault())
+        val showDialog = remember { mutableStateOf(false) }
+
 
         // Floating SOS Button
         Box(
@@ -177,7 +185,34 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
                 .offset(y = (-60).dp)
                 .background(Color.Red, shape = CircleShape)
                 .size(85.dp)
-                .clickable { showDialog.value = true },
+                .clickable {
+                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                        ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        // Get the last known location
+                        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                            location?.let {
+                                // Convert location to address
+                                val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 1)
+                                if (addresses.isNotEmpty()) {
+                                    val country = addresses[0].countryName ?: ""
+                                    val province = addresses[0].adminArea ?: ""
+                                    val city = addresses[0].locality ?: ""
+                                    val district = addresses[0].subAdminArea ?: ""
+                                    val subDistrict = addresses[0].subLocality ?: ""
+
+                                    // Call the ViewModel function to get SOS data
+                                    sosViewModel.getSosByLocation(country, province, city, district, subDistrict)
+
+                                    // Show dialog
+                                    showDialog.value = true
+                                }
+                            }
+                        }
+                    } else {
+                        // Handle permission not granted
+                        // You may want to request permissions here
+                    }
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(
