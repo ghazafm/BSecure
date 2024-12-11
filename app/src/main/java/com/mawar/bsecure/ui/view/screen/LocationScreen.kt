@@ -19,8 +19,10 @@ import com.mawar.bsecure.ui.viewModel.location.LocationViewModel
 import dagger.hilt.android.HiltAndroidApp
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
+import com.mawar.bsecure.repository.SosRepository
 import com.mawar.bsecure.ui.view.Beranda.Bottom
 import com.mawar.bsecure.ui.view.Beranda.TopBars
+import com.mawar.bsecure.ui.viewModel.sos.SosViewModel
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -31,27 +33,24 @@ fun LocationScreen(
     email: String,
     profilePictureUrl: String,
     uid: String,
-    viewModel: LocationViewModel = hiltViewModel()  // Get the ViewModel using Hilt or other DI
+    viewModel: LocationViewModel = hiltViewModel()
 ) {
-
+    val viewModelsos = SosViewModel(SosRepository())
     Scaffold(
         topBar = { TopBars() },
-        bottomBar = { Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid) }
+        bottomBar = { Bottom(viewModel = viewModelsos,navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid = uid) }
     ) { innerPadding ->
         val locationPermissionState = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
         val cameraPositionState = rememberCameraPositionState {
-            position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(LatLng(-50.200000, 156.816666), 10f) // Default to Jakarta
+            position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(LatLng(-50.200000, 156.816666), 10f)
         }
 
-        // Observe location updates from the ViewModel
+        // Observe current location from the ViewModel
         val currentLocation by viewModel.location.collectAsState()
-
-        // State untuk menyimpan lokasi marker
-        var markerPosition by remember { mutableStateOf<LatLng?>(null) }
 
         LaunchedEffect(locationPermissionState.status.isGranted) {
             if (locationPermissionState.status.isGranted) {
-                viewModel.updateLocation()  // Request location updates
+                viewModel.startLocationUpdates() // Start location updates
             } else {
                 locationPermissionState.launchPermissionRequest()
             }
@@ -59,38 +58,32 @@ fun LocationScreen(
 
         if (locationPermissionState.status.isGranted) {
             GoogleMap(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(innerPadding),
                 cameraPositionState = cameraPositionState,
                 properties = MapProperties(isMyLocationEnabled = true)
             ) {
-                // Jika ada lokasi saat ini, update posisi kamera
                 currentLocation?.let { location ->
+                    // Update camera position to follow the user's location
                     LaunchedEffect(location) {
                         cameraPositionState.position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(location, 15f)
                     }
 
-                    // Menambahkan marker di lokasi saat ini
-                    markerPosition = location
-                }
-
-                // Jika markerPosition tidak null, tampilkan marker
-                markerPosition?.let { position ->
-                    val markerState = rememberMarkerState(position = position)
-
+                    // Add a marker at the user's current location
                     Marker(
-                        state = markerState,
-                        title = "Panggilan Darurat",
-                        snippet = "Lokasi saat ini"
+                        state = rememberMarkerState(position = location),
+                        title = "Lokasi Anda",
+                        snippet = "Ini adalah lokasi terkini Anda"
                     )
                 }
-
             }
         } else {
             Text("Location permission is required to display the map.")
         }
     }
-    }
+}
+
 
 
 
