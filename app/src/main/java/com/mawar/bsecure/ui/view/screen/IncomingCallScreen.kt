@@ -14,10 +14,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.mawar.bsecure.R
 
 @Composable
-fun IncomingCallScreen(contactName: String) {
+fun IncomingCallScreen(contactName: String,navController: NavHostController) {
 
     Box(
         modifier = Modifier
@@ -65,7 +66,7 @@ fun IncomingCallScreen(contactName: String) {
                     Text(text = "Remind Me", color = Color.White, fontSize = 12.sp)
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    IconButton(onClick = { /* Message Action */ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.message),
                             contentDescription = "Message",
@@ -87,7 +88,7 @@ fun IncomingCallScreen(contactName: String) {
                     .padding(horizontal = 32.dp)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    IconButton(onClick = { /* Decline Call Action */ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.decline),
                             contentDescription = "Decline",
@@ -109,13 +110,6 @@ fun IncomingCallScreen(contactName: String) {
                     Text(text = "Accept", color = Color.White, fontSize = 14.sp)
                 }
             }
-        }
+        }`
     }
-}
-
-@Preview
-@Composable
-private fun vv() {
-    IncomingCallScreen("mom")
-
 }
