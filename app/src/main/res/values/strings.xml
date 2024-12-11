@@ -1,4 +1,6 @@
 <resources>
     <string name="default_web_client_id" translatable="false">166568371444-j9bqr27jjv3ut3bogrqep8in4gri1fb0.apps.googleusercontent.com</string>
     <string name="app_name">BSecure</string>
+    <string name="title_activity_navigation">NavigationActivity</string>
+    <string name="title_activity_location">LocationActivity</string>
 </resources>
