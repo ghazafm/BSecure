@@ -62,6 +62,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -85,7 +86,9 @@ import com.google.android.gms.location.LocationServices
 import com.mawar.bsecure.data.emergency.EmergencyService
 import com.mawar.bsecure.data.emergency.EmergencyServiceData
 import com.mawar.bsecure.data.emergency.FirestoreEmergencyService
+import com.mawar.bsecure.model.sos.Sos
 import com.mawar.bsecure.ui.view.screen.EmergencyServicesDialog
+import com.mawar.bsecure.ui.viewModel.sos.SosViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Locale
@@ -111,7 +114,7 @@ fun TopBars() {
 
 
 @Composable
-fun Bottom(navController: NavHostController, userName: String, email: String, profilePictureUrl: String, uid: String) {
+fun Bottom(viewModel: SosViewModel, navController: NavHostController, userName: String, email: String, profilePictureUrl: String, uid: String) {
     Box(modifier = Modifier.fillMaxWidth()) {
         NavigationBar (
             modifier = Modifier.align(Alignment.BottomCenter),
@@ -197,6 +200,7 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
         val emergencyServices = EmergencyServiceData.getEmergencyServices()
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         val currentAddress = remember { mutableStateOf("") }
+
         LaunchedEffect(Unit) {
             if (ActivityCompat.checkSelfPermission(
                     context,
@@ -210,6 +214,7 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
                         if (addresses != null && addresses.isNotEmpty()) {
                             val address = addresses[0]
                             // Format: Country, Province, City, District, Sub-district
+                            viewModel.getSosByLocation(negara = address.countryName, provinsi = address.adminArea, kota = address.locality, kecamatan = address.subAdminArea, kelurahan = address.subLocality)
                             val formattedAddress = "${address.countryName}, ${address.adminArea}, ${address.locality}, ${address.subAdminArea}, ${address.subLocality}"
                             Log.d("LocationAddress", "Obtained address: $formattedAddress")
 
@@ -248,15 +253,16 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
             latitude = -7.980800
             longitude = 112.645500
         }
+        val sosList = viewModel.sosList.collectAsState().value
+
         if (showDialog.value) {
             EmergencyServicesDialog(
                 showDialog = showDialog,
                 emergencyServices = emergencyServices,
                 context = context,
                 userLocation = userLocation,
-                userAddress = currentAddress.value // Pass the current address to the dialog
-
-
+                userAddress = currentAddress.value, // Pass the current address to the dialog
+                sos = sosList
             )
         }
     }

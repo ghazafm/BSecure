@@ -8,7 +8,7 @@ object EmergencyServiceData {
         return listOf(
             EmergencyService(
                 name = "Pemadam Kebakaran",
-                phoneNumbers = listOf("123", "123-1", "123-2"), // Beberapa nomor telepon
+                phoneNumbers = listOf("082137780052", "082137780052", "082137780052"), // Beberapa nomor telepon
                 iconResId = R.drawable.facebook,
                 locations = listOf(
                     ServiceLocation("123-1", -7.966620, 112.632632),
@@ -18,7 +18,7 @@ object EmergencyServiceData {
             ),
             EmergencyService(
                 name = "Rumah Sakit",
-                phoneNumbers = listOf("124", "124-1", "124-2"), // Beberapa nomor telepon
+                phoneNumbers = listOf("082137780052", "082137780052", "082137780052"), // Beberapa nomor telepon
                 iconResId = R.drawable.google,
                 locations = listOf(
                     ServiceLocation("124-1", -7.972000, 112.632000),
@@ -28,7 +28,7 @@ object EmergencyServiceData {
             ),
             EmergencyService(
                 name = "Polisi",
-                phoneNumbers = listOf("125", "125-1", "125-2"), // Beberapa nomor telepon
+                phoneNumbers = listOf("082137780052", "082137780052", "082137780052"), // Beberapa nomor telepon
                 iconResId = R.drawable.apple,
                 locations = listOf(
                     ServiceLocation("125-1", -7.971000, 112.626000),
