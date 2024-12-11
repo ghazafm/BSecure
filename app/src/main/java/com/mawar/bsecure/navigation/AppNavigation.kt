@@ -136,7 +136,7 @@ fun AppNavigation(
             arguments = listOf(navArgument("contactName") { defaultValue = "Unknown" })
         ) { backStackEntry ->
             val contactName = backStackEntry.arguments?.getString("contactName") ?: "Unknown"
-            IncomingCallScreen(contactName = contactName)
+            IncomingCallScreen(contactName = contactName,navController)
         }
 
         composable(

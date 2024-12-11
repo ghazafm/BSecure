@@ -124,7 +124,7 @@ fun Bottom(viewModel: SosViewModel, navController: NavHostController, userName: 
                 icon = { Icon(Icons.Filled.AddCircle, contentDescription = "community") },
                 label = { Text("Komunitas") },
                 selected = true,
-                onClick = {},
+                onClick = {navController.navigate("community/$uid")},
                 colors = NavigationBarItemColors(
                     selectedTextColor = Color.White,
                     selectedIndicatorColor = Color.Transparent,
