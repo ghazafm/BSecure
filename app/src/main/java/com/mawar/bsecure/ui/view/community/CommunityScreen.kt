@@ -51,7 +51,7 @@ fun CommunityScreen(onPostClick: (Post) -> Unit, onCommentClick: (Post) -> Unit,
                     navApp.navigate("addCommunity/$uid")
                 },
                 containerColor = MaterialTheme.colorScheme.primary, // Warna latar FAB
-                contentColor = Color.White // Warna konten (ikon) di dalam FAB
+                contentColor = Color(0xFF5A2D82) // Warna konten (ikon) di dalam FAB
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.add),
