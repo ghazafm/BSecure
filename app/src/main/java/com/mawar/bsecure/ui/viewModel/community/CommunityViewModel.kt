@@ -29,6 +29,10 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
     private val _likesCount = MutableStateFlow<Map<String, Int>>(emptyMap())
     val likesCount: StateFlow<Map<String, Int>> = _likesCount
 
+    // Like counts for each post
+    private val _commentsCount = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val commentsCount: StateFlow<Map<String, Int>> = _commentsCount
+
     // Cache for user data (username, profile picture, etc.)
     val userCache = mutableMapOf<String, Map<String, Any>>()
 
@@ -84,9 +88,16 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
                     updatedLikeCounts[post.id] = likeCount // Store like count by post ID
                 }
 
+                val updatedCommentCounts = mutableMapOf<String, Int>()
+                fetchedPosts.forEach { (post, _) ->
+                    val likeCount = repository.getCommentsCount(post)
+                    updatedLikeCounts[post.id] = likeCount // Store like count by post ID
+                }
+
                 // Update the posts list
                 _posts.value = sortedComments // Update the list of posts
                 _likesCount.value = updatedLikeCounts
+                _commentsCount.value = updatedCommentCounts
                 isLoading.value = false
             } catch (e: Exception) {
                 isLoading.value = false
