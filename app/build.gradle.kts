@@ -71,6 +71,7 @@ android {
 
 dependencies {
     implementation(libs.play.services.maps)
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(libs.accompanist.permissions) // Use the latest version available
     // Google Play Services Maps
     implementation(libs.play.services.maps.v1802)
