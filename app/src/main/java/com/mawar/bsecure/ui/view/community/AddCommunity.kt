@@ -56,7 +56,7 @@ fun AddCommunity(uid: String, navController: NavController, repository: Communit
         Spacer(modifier = Modifier.height(50.dp))
 
         Text(
-            text = "Masuk",
+            text = "Tambah ",
             fontSize = 32.sp,
             color = Color.White,
             fontWeight = FontWeight.Bold
