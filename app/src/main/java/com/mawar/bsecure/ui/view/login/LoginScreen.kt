@@ -130,7 +130,7 @@ fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
 
                                 if (appUser.username.isNotEmpty() && appUser.email.isNotEmpty()) {
                                     val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
-                                    navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl/${appUser.uid}")
+                                    navController.navigate("sos/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl/${appUser.uid}")
                                 } else {
                                     loginError = "Login failed. User data is incomplete."
                                     showErrorDialog = true
