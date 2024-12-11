@@ -35,10 +35,17 @@ fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
     var loginError by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+    // Function to close the alert dialog
+    fun closeDialog() {
+        showErrorDialog = false
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF5A2D82)) // Background color for the top part
+            .background(Color(0xFF5A2D82))
             .padding(top = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -125,10 +132,10 @@ fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
                                 navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl/${appUser.uid}")
                             } else {
                                 loginError = "Login failed. User data is incomplete."
-                            }
+                                showErrorDialog = true                            }
                         } else {
                             loginError = "Login failed. Please check your credentials."
-                        }
+                            showErrorDialog = true                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -189,11 +196,14 @@ fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
                             loginModel.signInWithGoogle(
                                 onSuccess = { appUser ->
                                     // Encode the profile picture URL
+                                    Log.d("LoginScreen", "anjeng2")
                                     Log.d("LoginScreen", "Navigating to community screen with username: ${appUser.uid}")
                                     val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
                                     navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl/${appUser.uid}")
                                 },
                                 onFailure = { e ->
+                                    Log.d("LoginScreen", "anjeng1")
+
                                     loginError = "Google sign-in failed: ${e.message}"
                                     e.printStackTrace()
                                 }
@@ -201,8 +211,22 @@ fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
                         } // Calls Google sign-in
                 )
             }
+
+            if (showErrorDialog) {
+                AlertDialog(
+                    onDismissRequest = { closeDialog() },
+                    title = { Text(text = "Login Failed") },
+                    text = { Text(text = loginError ?: "Unknown error") },
+                    confirmButton = {
+                        TextButton(onClick = { closeDialog() }) {
+                            Text("OK")
+                        }
+                    }
+                )
+            }
+        }
         }
     }
-}
+
 
 

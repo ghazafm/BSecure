@@ -8,6 +8,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
@@ -21,7 +22,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.BSecure">
 
-        <activity android:name=".NavigationActivity"
+        <activity android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,9 +32,9 @@
 
 
 
-    <meta-data
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${GOOGLE_MAPS_API_KEY}" />
+            android:value="AIzaSyACKNHZCAE747SWPuJj7hD7OZ14Kgo4GK0" />
     </application>
 
 </manifest>

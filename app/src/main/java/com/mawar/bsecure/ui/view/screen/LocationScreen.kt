@@ -1,10 +1,13 @@
 package com.mawar.bsecure.ui.view.screen
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -16,64 +19,78 @@ import com.mawar.bsecure.ui.viewModel.location.LocationViewModel
 import dagger.hilt.android.HiltAndroidApp
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
-
+import com.mawar.bsecure.ui.view.Beranda.Bottom
+import com.mawar.bsecure.ui.view.Beranda.TopBars
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun LocationScreen(
+    navController: NavHostController,
+    username: String,
+    email: String,
+    profilePictureUrl: String,
+    uid: String,
     viewModel: LocationViewModel = hiltViewModel()  // Get the ViewModel using Hilt or other DI
 ) {
-    val locationPermissionState = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
-    val cameraPositionState = rememberCameraPositionState {
-        position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(LatLng(-50.200000, 156.816666), 10f) // Default to Jakarta
-    }
 
-    // Observe location updates from the ViewModel
-    val currentLocation by viewModel.location.collectAsState()
-
-    // State untuk menyimpan lokasi marker
-    var markerPosition by remember { mutableStateOf<LatLng?>(null) }
-
-    LaunchedEffect(locationPermissionState.status.isGranted) {
-        if (locationPermissionState.status.isGranted) {
-            viewModel.updateLocation()  // Request location updates
-        } else {
-            locationPermissionState.launchPermissionRequest()
+    Scaffold(
+        topBar = { TopBars() },
+        bottomBar = { Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid) }
+    ) { innerPadding ->
+        val locationPermissionState = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        val cameraPositionState = rememberCameraPositionState {
+            position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(LatLng(-50.200000, 156.816666), 10f) // Default to Jakarta
         }
-    }
 
-    if (locationPermissionState.status.isGranted) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = MapProperties(isMyLocationEnabled = true)
-        ) {
-            // Jika ada lokasi saat ini, update posisi kamera
-            currentLocation?.let { location ->
-                LaunchedEffect(location) {
-                    cameraPositionState.position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(location, 15f)
+        // Observe location updates from the ViewModel
+        val currentLocation by viewModel.location.collectAsState()
+
+        // State untuk menyimpan lokasi marker
+        var markerPosition by remember { mutableStateOf<LatLng?>(null) }
+
+        LaunchedEffect(locationPermissionState.status.isGranted) {
+            if (locationPermissionState.status.isGranted) {
+                viewModel.updateLocation()  // Request location updates
+            } else {
+                locationPermissionState.launchPermissionRequest()
+            }
+        }
+
+        if (locationPermissionState.status.isGranted) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize()
+                    .padding(innerPadding),
+                cameraPositionState = cameraPositionState,
+                properties = MapProperties(isMyLocationEnabled = true)
+            ) {
+                // Jika ada lokasi saat ini, update posisi kamera
+                currentLocation?.let { location ->
+                    LaunchedEffect(location) {
+                        cameraPositionState.position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(location, 15f)
+                    }
+
+                    // Menambahkan marker di lokasi saat ini
+                    markerPosition = location
                 }
 
-                // Menambahkan marker di lokasi saat ini
-                markerPosition = location
+                // Jika markerPosition tidak null, tampilkan marker
+                markerPosition?.let { position ->
+                    val markerState = rememberMarkerState(position = position)
+
+                    Marker(
+                        state = markerState,
+                        title = "Panggilan Darurat",
+                        snippet = "Lokasi saat ini"
+                    )
+                }
+
             }
-
-            // Jika markerPosition tidak null, tampilkan marker
-            markerPosition?.let { position ->
-                val markerState = rememberMarkerState(position = position)
-
-                Marker(
-                    state = markerState,
-                    title = "Panggilan Darurat",
-                    snippet = "Lokasi saat ini"
-                )
-            }
-
+        } else {
+            Text("Location permission is required to display the map.")
         }
-    } else {
-        Text("Location permission is required to display the map.")
     }
-}
+    }
+
 
 

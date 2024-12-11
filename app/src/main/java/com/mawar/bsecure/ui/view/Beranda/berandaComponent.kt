@@ -51,8 +51,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-
+import androidx.navigation.NavHostController
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,74 +76,83 @@ fun TopBars() {
 
 
 @Composable
-fun Bottom() {
-    NavigationBar (
-        modifier = Modifier,
-        containerColor = Color(0xFF7346A5)
+fun Bottom(navController: NavHostController, userName: String, email: String, profilePictureUrl: String, uid: String) {
+        NavigationBar (
+            modifier = Modifier,
+            containerColor = Color(0xFF7346A5)
 
-    ){
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.AddCircle, contentDescription = "community") },
-            label = { Text("Komunitas") },
-            selected = true,
-            onClick = {},
-            colors = NavigationBarItemColors(
-                selectedTextColor = Color.White,
-                selectedIndicatorColor = Color.Transparent,
-                selectedIconColor = Color.White,
-                unselectedIconColor = Color.White,
-                unselectedTextColor = Color.White,
-                disabledIconColor = Color.White,
-                disabledTextColor = Color.White)
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Call, contentDescription = "call") },
-            label = { Text("Panggilan Palsu", textAlign = TextAlign.Center) },
-            selected = true,
-            onClick = {},
-            colors = NavigationBarItemColors(
-                selectedTextColor = Color.White,
-                selectedIndicatorColor = Color.Transparent,
-                selectedIconColor = Color.White,
-                unselectedIconColor = Color.White,
-                unselectedTextColor = Color.White,
-                disabledIconColor = Color.White,
-                disabledTextColor = Color.White
+        ){
+            NavigationBarItem(
+                icon = { Icon(Icons.Filled.AddCircle, contentDescription = "community") },
+                label = { Text("Komunitas") },
+                selected = true,
+                onClick = {},
+                colors = NavigationBarItemColors(
+                    selectedTextColor = Color.White,
+                    selectedIndicatorColor = Color.Transparent,
+                    selectedIconColor = Color.White,
+                    unselectedIconColor = Color.White,
+                    unselectedTextColor = Color.White,
+                    disabledIconColor = Color.White,
+                    disabledTextColor = Color.White)
             )
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.LocationOn, contentDescription = "call") },
-            label = { Text("Lokasi") },
-            selected = true,
-            onClick = {},
-            colors = NavigationBarItemColors(
-                selectedTextColor = Color.White,
-                selectedIndicatorColor = Color.Transparent,
-                selectedIconColor = Color.White,
-                unselectedIconColor = Color.White,
-                unselectedTextColor = Color.White,
-                disabledIconColor = Color.White,
-                disabledTextColor = Color.White
+            NavigationBarItem(
+                icon = { Icon(Icons.Filled.Call, contentDescription = "call") },
+                label = { Text("Panggilan Palsu", textAlign = TextAlign.Center) },
+                selected = true,
+                onClick = {
+                    val encodedProfilePictureUrl = URLEncoder.encode(profilePictureUrl, StandardCharsets.UTF_8.toString())
+                    navController.navigate("fakecall/$userName/$email/$encodedProfilePictureUrl/$uid")
+                },
+                colors = NavigationBarItemColors(
+                    selectedTextColor = Color.White,
+                    selectedIndicatorColor = Color.Transparent,
+                    selectedIconColor = Color.White,
+                    unselectedIconColor = Color.White,
+                    unselectedTextColor = Color.White,
+                    disabledIconColor = Color.White,
+                    disabledTextColor = Color.White
+                )
             )
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Person, contentDescription = "call") },
-            label = { Text("Profil") },
-            selected = true,
-            onClick = {},
-            colors = NavigationBarItemColors(
-                selectedTextColor = Color.White,
-                selectedIndicatorColor = Color.Transparent,
-                selectedIconColor = Color.White,
-                unselectedIconColor = Color.White,
-                unselectedTextColor = Color.White,
-                disabledIconColor = Color.White,
-                disabledTextColor = Color.White
+            NavigationBarItem(
+                icon = { Icon(Icons.Filled.LocationOn, contentDescription = "location") },
+                label = { Text("Lokasi") },
+                selected = true,
+                onClick = {
+                    val encodedProfilePictureUrl = URLEncoder.encode(profilePictureUrl, StandardCharsets.UTF_8.toString())
+                    navController.navigate("location/$userName/$email/$encodedProfilePictureUrl/$uid")
+                },
+                colors = NavigationBarItemColors(
+                    selectedTextColor = Color.White,
+                    selectedIndicatorColor = Color.Transparent,
+                    selectedIconColor = Color.White,
+                    unselectedIconColor = Color.White,
+                    unselectedTextColor = Color.White,
+                    disabledIconColor = Color.White,
+                    disabledTextColor = Color.White
+                )
             )
-        )
+            NavigationBarItem(
+                icon = { Icon(Icons.Filled.Person, contentDescription = "profile") },
+                label = { Text("Profil") },
+                selected = true,
+                onClick = {
+                    val encodedProfilePictureUrl = URLEncoder.encode(profilePictureUrl, StandardCharsets.UTF_8.toString())
+                    navController.navigate("profile/$userName/$email/$encodedProfilePictureUrl/$uid")
+                },
+                colors = NavigationBarItemColors(
+                    selectedTextColor = Color.White,
+                    selectedIndicatorColor = Color.Transparent,
+                    selectedIconColor = Color.White,
+                    unselectedIconColor = Color.White,
+                    unselectedTextColor = Color.White,
+                    disabledIconColor = Color.White,
+                    disabledTextColor = Color.White
+                )
+            )
 
 
-    }
+        }
 }
 
 @Composable
@@ -288,7 +298,7 @@ private fun topPrev() {
 @Preview
 @Composable
 private fun botPrev() {
-    Bottom()
+//    Bottom()
 
 }
 
