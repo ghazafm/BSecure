@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.mawar.bsecure.model.comment.Comment
 import com.mawar.bsecure.model.post.Post
 import com.mawar.bsecure.repository.CommunityRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -53,7 +54,7 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
                     timestamp = System.currentTimeMillis()
                 )
                 repository.addPost(post)
-                loadPosts()
+                loadPosts(uid)
                 isLoading.value = false
             } catch (e: Exception) {
                 isLoading.value = false
@@ -66,36 +67,40 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
     /**
      * Load posts from Firestore and fetch the user data (like username and profile picture) for each post's UID.
      */
-    fun loadPosts() {
+    fun loadPosts(uid: String) {
         viewModelScope.launch {
             try {
                 isLoading.value = true
+
+                // Step 1: Get all posts concurrently
                 val fetchedPosts = repository.getPosts()
 
-                // Attach user data to each post
-                val postsWithUserData = fetchedPosts.map { (post, userData) ->
-                    // Cache user data to avoid repeated Firestore calls
-                    if (!userCache.containsKey(post.uid)) {
-                        userCache[post.uid] = userData ?: emptyMap()
-                    }
-                    post // Do not modify the Post model
-                }
-                val sortedComments = postsWithUserData.sortedByDescending { it.timestamp }
-
+                // Step 2: Launch concurrent tasks for likes, comments, and user data
                 val updatedLikeCounts = mutableMapOf<String, Int>()
-                fetchedPosts.forEach { (post, _) ->
-                    val likeCount = repository.getLikesCount(post)
-                    updatedLikeCounts[post.id] = likeCount // Store like count by post ID
-                }
-
                 val updatedCommentCounts = mutableMapOf<String, Int>()
-                fetchedPosts.forEach { (post, _) ->
-                    val likeCount = repository.getCommentsCount(post)
-                    updatedLikeCounts[post.id] = likeCount // Store like count by post ID
+                val postsWithUserData = fetchedPosts.map { (post, userData) ->
+                    async {
+                        // Cache user data if it doesn't exist
+                        if (!userCache.containsKey(post.uid)) {
+                            userCache[post.uid] = userData ?: emptyMap()
+                        }
+                        // Launch likes and comments requests concurrently
+                        val likeCountDeferred = async { repository.getLikesCount(post) }
+                        val commentCountDeferred = async { repository.getCommentsCount(post) }
+                        updatedLikeCounts[post.id] = likeCountDeferred.await() // Wait for the like count
+                        updatedCommentCounts[post.id] = commentCountDeferred.await() // Wait for the comment count
+
+                        val hasLiked = repository.checkIfUserLikedPost(post, uid)
+                        post.copy(isLikedByCurrentUser = hasLiked)
+                    }
                 }
 
-                // Update the posts list
-                _posts.value = sortedComments // Update the list of posts
+                // Step 3: Wait for all concurrent tasks to complete
+                val postsList = postsWithUserData.map { it.await() }
+                val sortedPosts = postsList.sortedByDescending { it.timestamp }
+
+                // Update the state after all asynchronous requests are complete
+                _posts.value = sortedPosts
                 _likesCount.value = updatedLikeCounts
                 _commentsCount.value = updatedCommentCounts
                 isLoading.value = false
@@ -118,12 +123,23 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
         viewModelScope.launch {
             try {
                 // Toggle like in Firestore
-                repository.toggleLike(post, userId)
+                val hasLiked = repository.toggleLike(post, userId)
 
-                // After toggling, fetch the updated like count
+                // Update isLikedByCurrentUser for the specific post
+                val updatedPosts = _posts.value.map {
+                    if (it.id == post.id) {
+                        it.copy(
+                            isLikedByCurrentUser = hasLiked // This is the new toggle state
+                        )
+                    } else {
+                        it
+                    }
+                }
+                // Persist updated posts in the ViewModel state
+                _posts.value = updatedPosts
+
+                // Toggle like in Firestore
                 val updatedCount = repository.getLikesCount(post)
-
-                // Persist the updated like count
                 _likesCount.value = _likesCount.value.toMutableMap().apply {
                     put(post.id, updatedCount)
                 }

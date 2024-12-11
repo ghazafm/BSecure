@@ -35,7 +35,7 @@ fun CommunityScreen(onPostClick: (Post) -> Unit, onCommentClick: (Post) -> Unit,
 
     // Load posts when the screen is first displayed
     LaunchedEffect(true) {
-        communityViewModel.loadPosts()
+        communityViewModel.loadPosts(uid)
     }
 
     // Observe state from ViewModel
@@ -215,7 +215,7 @@ fun CommunityPostItem(
 
                 IconButton(onClick = { onLikeClick(post) }) {
                     Icon(
-                        painter = painterResource(id = if (likesCount > 0) R.drawable.likehijau else R.drawable.like),
+                        painter = painterResource(id = if (post.isLikedByCurrentUser) R.drawable.likehijau else R.drawable.like),
                         contentDescription = "Like"
                     )
                 }
