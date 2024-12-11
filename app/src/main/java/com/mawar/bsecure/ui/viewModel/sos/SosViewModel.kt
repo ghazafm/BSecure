@@ -32,4 +32,18 @@ class SosViewModel(private val repository: SosRepository) : ViewModel() {
             fetchAllSos() // Refresh list after adding
         }
     }
+
+    fun getSosByLocation(
+        negara: String = "",
+        provinsi: String = "",
+        kota: String = "",
+        kecamatan: String = "",
+        kelurahan: String = ""
+    ) {
+        viewModelScope.launch {
+            repository.getSosByLocation(negara, provinsi, kota, kecamatan, kelurahan).collect { sosList ->
+                _sosList.value = sosList
+            }
+        }
+    }
 }

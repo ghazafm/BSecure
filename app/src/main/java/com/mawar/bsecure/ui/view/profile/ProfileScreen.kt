@@ -22,8 +22,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.mawar.bsecure.R
+import com.mawar.bsecure.repository.SosRepository
 import com.mawar.bsecure.ui.view.Beranda.Bottom
 import com.mawar.bsecure.ui.view.Beranda.TopBars
+import com.mawar.bsecure.ui.viewModel.sos.SosViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -67,7 +69,7 @@ fun ProfileScreen(navController: NavHostController, username: String, email: Str
                     Spacer(modifier = Modifier.weight(1f))
                 }}
         },
-        bottomBar = { Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid) }
+        bottomBar = { Bottom(viewModel = SosViewModel(SosRepository()),navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid) }
 
     ) {
         innerPadding ->
