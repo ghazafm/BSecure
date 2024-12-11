@@ -86,7 +86,8 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
                 icon = { Icon(Icons.Filled.AddCircle, contentDescription = "community") },
                 label = { Text("Komunitas") },
                 selected = true,
-                onClick = {},
+                onClick = { navController.navigate("community/$uid")
+                },
                 colors = NavigationBarItemColors(
                     selectedTextColor = Color.White,
                     selectedIndicatorColor = Color.Transparent,
@@ -114,6 +115,9 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
                     disabledTextColor = Color.White
                 )
             )
+
+
+
             NavigationBarItem(
                 icon = { Icon(Icons.Filled.LocationOn, contentDescription = "location") },
                 label = { Text("Lokasi") },

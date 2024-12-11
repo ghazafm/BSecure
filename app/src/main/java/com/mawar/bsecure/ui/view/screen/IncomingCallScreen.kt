@@ -14,10 +14,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.mawar.bsecure.R
 
 @Composable
-fun IncomingCallScreen(contactName: String) {
+fun IncomingCallScreen(contactName: String, navController: NavHostController) {
 
     Box(
         modifier = Modifier
@@ -87,7 +88,7 @@ fun IncomingCallScreen(contactName: String) {
                     .padding(horizontal = 32.dp)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    IconButton(onClick = { /* Decline Call Action */ }) {
+                    IconButton(onClick = { navController.popBackStack()}) {
                         Icon(
                             painter = painterResource(id = R.drawable.decline),
                             contentDescription = "Decline",
@@ -98,7 +99,7 @@ fun IncomingCallScreen(contactName: String) {
                     Text(text = "Decline", color = Color.White, fontSize = 14.sp)
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    IconButton(onClick = { /* Accept Call Action */ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.accept),
                             contentDescription = "Accept",
@@ -113,9 +114,3 @@ fun IncomingCallScreen(contactName: String) {
     }
 }
 
-@Preview
-@Composable
-private fun vv() {
-    IncomingCallScreen("mom")
-
-}

@@ -64,7 +64,7 @@ fun AppNavigation(
         val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
 
         if (username.isNotEmpty() && email.isNotEmpty()) {
-            println("Navigating to profile with username: $username, email: $email")
+            println("Navigating to profile with username: $username, email: $email, foto: $encodedProfilePictureUrl")
             navController.navigate("sos/$username/$email/$encodedProfilePictureUrl/$uid")
         }
         userDetailsState.value = null // Reset the state to avoid repeated navigation
@@ -75,7 +75,7 @@ fun AppNavigation(
         composable(
             "sos/{username}/{email}/{profilePictureUrl}/{uid}",
             arguments = listOf(
-                navArgument("uid") { type = NavType.StringType; defaultValue = "tes" },
+                navArgument("uid") { type = NavType.StringType; defaultValue = "" },
                 navArgument("username") { type = NavType.StringType; defaultValue = "" },
                 navArgument("email") { type = NavType.StringType; defaultValue = "" },
                 navArgument("profilePictureUrl") { type = NavType.StringType; defaultValue = "" }
@@ -136,7 +136,7 @@ fun AppNavigation(
             arguments = listOf(navArgument("contactName") { defaultValue = "Unknown" })
         ) { backStackEntry ->
             val contactName = backStackEntry.arguments?.getString("contactName") ?: "Unknown"
-            IncomingCallScreen(contactName = contactName)
+            IncomingCallScreen(contactName = contactName,navController)
         }
 
         composable(

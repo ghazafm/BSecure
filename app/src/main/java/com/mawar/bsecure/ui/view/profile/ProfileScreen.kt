@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.google.firebase.auth.FirebaseAuth
 import com.mawar.bsecure.R
 import com.mawar.bsecure.ui.view.Beranda.Bottom
 import com.mawar.bsecure.ui.view.Beranda.TopBars
@@ -134,9 +135,11 @@ fun ProfileScreen(navController: NavHostController, username: String, email: Str
                 ProfileOption("Kebijakan"){
                     navController.navigate("kebijakan")
                 }
-                ProfileOption("Community"){
-                    navController.navigate("community/$uid")
+                ProfileOption("Keluar"){
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate("login")
                 }
+
             }
         }
     }
