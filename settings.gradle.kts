@@ -9,6 +9,9 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        plugins {
+            id("com.google.dagger.hilt.android") version "2.48"
+        }
     }
 }
 dependencyResolutionManagement {

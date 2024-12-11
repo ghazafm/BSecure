@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -32,12 +33,18 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import com.mawar.bsecure.repository.PhoneAuthRepository
+import com.mawar.bsecure.ui.view.screen.SOSScreen
 import com.mawar.bsecure.ui.view.community.CommunityPostDetailScreen
 import com.mawar.bsecure.ui.view.community.CommunityScreen
 import com.mawar.bsecure.ui.viewModel.community.CommunityViewModelFactory
 import com.mawar.bsecure.ui.view.community.AddCommunity
 import com.mawar.bsecure.ui.view.profile.KebijakanScreen
+import com.mawar.bsecure.ui.view.screen.FakeCallScreen
+import com.mawar.bsecure.ui.view.screen.IncomingCallScreen
+import com.mawar.bsecure.ui.view.screen.LocationScreen
 import com.mawar.bsecure.ui.viewModel.community.CommunityViewModel
+import com.mawar.bsecure.ui.viewModel.fakeCall.TimerViewModel
+import com.mawar.bsecure.ui.viewModel.location.LocationViewModel
 
 @Composable
 fun AppNavigation(
@@ -58,7 +65,7 @@ fun AppNavigation(
 
         if (username.isNotEmpty() && email.isNotEmpty()) {
             println("Navigating to profile with username: $username, email: $email")
-            navController.navigate("profile/$username/$email/$encodedProfilePictureUrl")
+            navController.navigate("sos/$username/$email/$encodedProfilePictureUrl/$uid")
         }
         userDetailsState.value = null // Reset the state to avoid repeated navigation
     }
@@ -66,9 +73,9 @@ fun AppNavigation(
     NavHost(navController = navController, startDestination = "login") {
         composable("login") { LoginScreen(navController, loginModel) }
         composable(
-            "profile/{username}/{email}/{profilePictureUrl}/{uid}",
+            "sos/{username}/{email}/{profilePictureUrl}/{uid}",
             arguments = listOf(
-                navArgument("uid") { type = NavType.StringType; defaultValue = "" },
+                navArgument("uid") { type = NavType.StringType; defaultValue = "tes" },
                 navArgument("username") { type = NavType.StringType; defaultValue = "" },
                 navArgument("email") { type = NavType.StringType; defaultValue = "" },
                 navArgument("profilePictureUrl") { type = NavType.StringType; defaultValue = "" }
@@ -82,7 +89,74 @@ fun AppNavigation(
             // Decode the profile picture URL
             val profilePictureUrl = URLDecoder.decode(profilePictureUrlEncoded, StandardCharsets.UTF_8.toString())
 
-            ProfileScreen(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid)
+            SOSScreen(navController, username = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid)
+        }
+        composable(
+            "fakecall/{username}/{email}/{profilePictureUrl}/{uid}",
+            arguments = listOf(
+                navArgument("uid") { type = NavType.StringType; defaultValue = "tes" },
+                navArgument("username") { type = NavType.StringType; defaultValue = "" },
+                navArgument("email") { type = NavType.StringType; defaultValue = "" },
+                navArgument("profilePictureUrl") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val uid = backStackEntry.arguments?.getString("uid") ?: ""
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            val profilePictureUrlEncoded = backStackEntry.arguments?.getString("profilePictureUrl") ?: ""
+
+            // Decode the profile picture URL
+            val profilePictureUrl = URLDecoder.decode(profilePictureUrlEncoded, StandardCharsets.UTF_8.toString())
+
+            FakeCallScreen(navController, username = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid, timerViewModel = TimerViewModel())
+        }
+        composable(
+            "location/{username}/{email}/{profilePictureUrl}/{uid}",
+            arguments = listOf(
+                navArgument("uid") { type = NavType.StringType; defaultValue = "tes" },
+                navArgument("username") { type = NavType.StringType; defaultValue = "" },
+                navArgument("email") { type = NavType.StringType; defaultValue = "" },
+                navArgument("profilePictureUrl") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val uid = backStackEntry.arguments?.getString("uid") ?: ""
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            val profilePictureUrlEncoded = backStackEntry.arguments?.getString("profilePictureUrl") ?: ""
+
+            // Decode the profile picture URL
+            val profilePictureUrl = URLDecoder.decode(profilePictureUrlEncoded, StandardCharsets.UTF_8.toString())
+
+            LocationScreen(navController, username = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid
+            )
+        }
+
+        composable(
+            route = "incoming_call/{contactName}",
+            arguments = listOf(navArgument("contactName") { defaultValue = "Unknown" })
+        ) { backStackEntry ->
+            val contactName = backStackEntry.arguments?.getString("contactName") ?: "Unknown"
+            IncomingCallScreen(contactName = contactName)
+        }
+
+        composable(
+            "profile/{username}/{email}/{profilePictureUrl}/{uid}",
+            arguments = listOf(
+                navArgument("uid") { type = NavType.StringType; defaultValue = "tes" },
+                navArgument("username") { type = NavType.StringType; defaultValue = "" },
+                navArgument("email") { type = NavType.StringType; defaultValue = "" },
+                navArgument("profilePictureUrl") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val uid = backStackEntry.arguments?.getString("uid") ?: ""
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            val profilePictureUrlEncoded = backStackEntry.arguments?.getString("profilePictureUrl") ?: ""
+
+            // Decode the profile picture URL
+            val profilePictureUrl = URLDecoder.decode(profilePictureUrlEncoded, StandardCharsets.UTF_8.toString())
+
+            ProfileScreen(navController, username = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid)
         }
         composable(
             "edit_profile/{username}/{email}/{profilePictureUrl}",

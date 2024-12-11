@@ -70,6 +70,7 @@ class LoginModel(
 
     fun signInWithGoogle(onSuccess: (AppUser) -> Unit, onFailure: (Exception) -> Unit) {
         googleSignInClient.signOut().addOnCompleteListener {
+            Log.d("LoginScreen", "asuw")
             val signInIntent = googleSignInClient.signInIntent
             launcher.launch(signInIntent)
         }

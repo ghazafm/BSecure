@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.mawar.bsecure" />
-                  <option name="mobileSdkAppId" value="1:166568371444:android:cf3f810df38750a2a4eaa1" />
-                  <option name="projectId" value="b-cfb0b" />
-                  <option name="projectNumber" value="166568371444" />
+                  <option name="appId" value="PLACEHOLDER" />
+                  <option name="mobileSdkAppId" value="" />
+                  <option name="projectId" value="" />
+                  <option name="projectNumber" value="" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

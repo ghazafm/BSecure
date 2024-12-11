@@ -1,4 +1,4 @@
-package com.mawar.bsecure.ui.viewModel.fakecall
+package com.mawar.bsecure.ui.viewModel.fakeCall
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
