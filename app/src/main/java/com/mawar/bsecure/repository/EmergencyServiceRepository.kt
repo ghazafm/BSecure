@@ -16,8 +16,8 @@ object EmergencyServiceRepository {
                 val services = documents.mapNotNull { document ->
                     val name = document.getString("name")
                     val phoneNumbers = document.get("phone_numbers") as? List<String>
-                    val iconResId = document.getString("icon_res_id") // Pastikan ini sesuai dengan yang Anda simpan
-                    val locations = document.get("locations") as? List<Map<String, Any>>
+                    val iconResId = document.getString("icon_res_id")?.toIntOrNull()
+                    val locations = document.get("locations") as? List<Map<String, Any>> ?: emptyList()
 
                     if (name != null && phoneNumbers != null && iconResId != null && locations != null) {
                         EmergencyService(

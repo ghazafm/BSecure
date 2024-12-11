@@ -65,7 +65,7 @@ fun AppNavigation(
             // Decode the profile picture URL
             val profilePictureUrl = URLDecoder.decode(profilePictureUrlEncoded, StandardCharsets.UTF_8.toString())
 
-            ProfileScreen(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl)
+            ProfileScreen(navController, username = username, email = email, profilePictureUrl = profilePictureUrl)
         }
         composable(
             "edit_profile/{username}/{email}/{profilePictureUrl}",

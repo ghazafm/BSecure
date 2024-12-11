@@ -26,7 +26,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Composable
-fun ProfileScreen(navController: NavHostController, userName: String, email: String, profilePictureUrl: String) {
+fun ProfileScreen(navController: NavHostController, username: String?, email: String?, profilePictureUrl: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,7 +97,7 @@ fun ProfileScreen(navController: NavHostController, userName: String, email: Str
 
             // User name and handle
             Text(
-                text = "$userName",
+                text = "$username",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -113,7 +113,7 @@ fun ProfileScreen(navController: NavHostController, userName: String, email: Str
 
             ProfileOption("Ubah Profil"){
                 val encodedProfilePictureUrl = URLEncoder.encode(profilePictureUrl, StandardCharsets.UTF_8.toString())
-                navController.navigate("edit_profile/$userName/$email/$encodedProfilePictureUrl")
+                navController.navigate("edit_profile/$username/$email/$encodedProfilePictureUrl")
             }
             ProfileOption("Terhubung Dengan Kami"){
                 navController.navigate("contact")

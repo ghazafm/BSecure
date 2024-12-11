@@ -1,6 +1,7 @@
 package com.mawar.bsecure.ui.view.Beranda
 
 import android.icu.text.CaseMap.Title
+import android.location.Location
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,19 +41,22 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-
+import com.mawar.bsecure.data.emergency.EmergencyServiceData
+import com.mawar.bsecure.ui.view.screen.EmergencyServicesDialog
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -147,15 +151,36 @@ fun Bottom() {
 
 @Composable
 fun floatSOS() {
+    val context = LocalContext.current
+    val emergencyServices = EmergencyServiceData.getEmergencyServices()
+    val showDialog = remember { mutableStateOf(false) }
+
     FloatingActionButton(
-        onClick = {},
+        onClick = {
+            showDialog.value = true
+        },
         containerColor = Color.Red,
         shape = CircleShape,
         modifier = Modifier.size(80.dp) // Menentukan ukuran FloatingActionButton
     ) {
         Text(text = "SOS", color = Color.White, fontSize = 20.sp)
     }
+    val userLocation = Location("").apply {
+        // Ganti dengan koordinat lokasi pengguna yang sebenarnya
+        latitude = -7.980800
+        longitude = 112.645500
+    }
+    if (showDialog.value) {
+        EmergencyServicesDialog(
+            showDialog = showDialog,
+            emergencyServices = emergencyServices,
+            context = context,
+            userLocation = userLocation
+        )
+    }
 }
+
+
 
 
 @Composable
@@ -179,7 +204,9 @@ fun floatBar(onMenuClick: () -> Unit) {
 @Composable
 fun floatNotif() {
     FloatingActionButton(
-        onClick = {},
+        onClick = {
+
+        },
         containerColor = Color(0xFF7346A5),
         contentColor = Color.White
     ) {

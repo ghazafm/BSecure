@@ -12,9 +12,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class NavigationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val username = intent.getStringExtra("username")
+        val email = intent.getStringExtra("email")
+        val profilePictureUrl = intent.getStringExtra("profilePictureUrl")
+        val uid = intent.getStringExtra("uid")
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        FirestoreHelper.saveEmergencyServicesToFirestore()
+        //FirestoreHelper.saveEmergencyServicesToFirestore()
         setContent {
             BSecureTheme {
                 MainScreen()

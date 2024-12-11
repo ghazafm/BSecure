@@ -1,11 +1,17 @@
 package com.mawar.bsecure.ui.view.screen
 
+import android.location.Location
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
@@ -32,9 +38,15 @@ import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.DrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material.DrawerValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.mawar.bsecure.data.emergency.EmergencyServiceData
+import com.mawar.bsecure.ui.view.profile.ProfileScreen
 import com.mawar.bsecure.ui.viewModel.fakeCall.TimerViewModel
 
 
@@ -127,19 +139,26 @@ fun CustomBottomNavigation(navController: NavHostController) {
         Screen.Location,
         Screen.Profile
     )
+    val showDialog = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val emergencyServices = EmergencyServiceData.getEmergencyServices()
 
-    BottomAppBar  (modifier = Modifier.background(color = Color(0xFF9A9AB2)),
-        contentColor = Color(0xFFF6F6F6),
-        contentPadding = PaddingValues(horizontal = 0.dp),
-        containerColor = Color(0xFF7346A5)
-    ) {
-        items.forEachIndexed { index, screen ->
-            if (index ==9) {
-                Spacer(Modifier.weight(1f, fill = true))
-            } else {
+    Box {
+        // Bottom Navigation Bar
+        BottomAppBar(
+            modifier = Modifier
+                .background(color = Color(0xFF9A9AB2))
+                .height(90.dp), // Atur tinggi navbar
+            contentColor = Color(0xFFF6F6F6),
+            contentPadding = PaddingValues(horizontal = 0.dp),
+            containerColor = Color(0xFF7346A5)
+        ) {
+            items.forEachIndexed { index, screen ->
                 BottomNavigationItem(
+                    modifier = Modifier.padding(top = 10.dp),
                     icon = { Icon(screen.icon, contentDescription = screen.title) },
-                    label = { Text(screen.title) },
+                    label = { Text(screen.title,
+                        fontSize = 12.sp) },
                     selected = false,
                     onClick = {
                         navController.navigate(screen.route) {
@@ -149,10 +168,48 @@ fun CustomBottomNavigation(navController: NavHostController) {
                         }
                     }
                 )
+
+
+                if (screen == Screen.FakeCall) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
             }
+        }
+
+        // Tombol SOS
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = (-40).dp)
+                .size(85.dp)
+                .background(color = Color.Red, shape = CircleShape)
+                .clickable {
+                    showDialog.value = true
+                }
+        ) {
+            Text(
+                text = "SOS",
+                color = Color.White,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        val userLocation = Location("").apply {
+            // Ganti dengan koordinat lokasi pengguna yang sebenarnya
+            latitude = -7.980800
+            longitude = 112.645500
+        }
+        if (showDialog.value) {
+            EmergencyServicesDialog(
+                showDialog = showDialog,
+                emergencyServices = emergencyServices,
+                context = context,
+                userLocation = userLocation
+            )
         }
     }
 }
+
+
 
 @Composable
 fun NavHostContainer(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -172,7 +229,6 @@ fun NavHostContainer(navController: NavHostController, modifier: Modifier = Modi
             IncomingCallScreen(contactName = contactName)
         }
         composable(Screen.Location.route) { LocationScreen() }
-        composable(Screen.Profile.route) { ProfileScreen() }
     }
 }
 
