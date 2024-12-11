@@ -234,6 +234,10 @@ fun MainScreen(navController: NavController, uid: String) {
     } else {
         val userData = communityViewModel.userCache[selectedPost!!.uid] // Get user data for the selected post's UID
         CommunityPostDetailScreen(
+            onPostClick = { post ->
+                selectedPost = post
+                isCommentClicked = false // General navigation
+            },
             navController = navController,
             uid = uid,
             post = selectedPost!!,
