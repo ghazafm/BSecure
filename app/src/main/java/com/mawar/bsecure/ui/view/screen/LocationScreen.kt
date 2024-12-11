@@ -19,8 +19,10 @@ import com.mawar.bsecure.ui.viewModel.location.LocationViewModel
 import dagger.hilt.android.HiltAndroidApp
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
+import com.mawar.bsecure.repository.SosRepository
 import com.mawar.bsecure.ui.view.Beranda.Bottom
 import com.mawar.bsecure.ui.view.Beranda.TopBars
+import com.mawar.bsecure.ui.viewModel.sos.SosViewModel
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -33,9 +35,10 @@ fun LocationScreen(
     uid: String,
     viewModel: LocationViewModel = hiltViewModel()
 ) {
+    val viewModelsos = SosViewModel(SosRepository())
     Scaffold(
         topBar = { TopBars() },
-        bottomBar = { Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid = uid) }
+        bottomBar = { Bottom(viewModel = viewModelsos,navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid = uid) }
     ) { innerPadding ->
         val locationPermissionState = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
         val cameraPositionState = rememberCameraPositionState {
