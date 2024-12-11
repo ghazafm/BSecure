@@ -6,7 +6,7 @@ import android.util.Log
 import com.google.android.gms.location.FusedLocationProviderClient
 import java.util.Locale
 
-object LocationHelper {
+object Location {
     fun getLastKnownLocation(
         context: Context,
         fusedLocationClient: FusedLocationProviderClient,
