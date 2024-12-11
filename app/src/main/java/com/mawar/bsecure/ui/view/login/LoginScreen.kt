@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -49,7 +50,7 @@ fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
             .padding(top = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Text(
             text = "Masuk",
@@ -58,175 +59,167 @@ fun LoginScreen(navController: NavHostController, loginModel: LoginModel) {
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
                 .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
+            item {
+                Spacer(modifier = Modifier.height(30.dp))
 
-            Image(
-                painter = painterResource(id = R.drawable.bsecure),
-                contentDescription = "Bsecure",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .size(80.dp)
-            )
+                Image(
+                    painter = painterResource(id = R.drawable.bsecure),
+                    contentDescription = "Bsecure",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .size(80.dp)
+                )
 
-            Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
-            Divider(color = Color.Gray, thickness = 1.dp)
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Masukkan email/username Anda") },
-                placeholder = { Text("email@gmail.com") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Masukkan password Anda") },
-                placeholder = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Lupa password Anda?",
-                fontSize = 14.sp,
-                color = Color(0xFFB285D4),
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .clickable { navController.navigate("forget") }
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Assuming appUser is the fetched user data from Firestore
-            Button(
-                onClick = {
-                    isLoading = true
-                    coroutineScope.launch {
-                        val appUser = loginModel.login(email.text, password.text)
-                        isLoading = false
-                        if (appUser != null) {
-                            // Debug log for login result
-                            println("Login result: appUser = ${appUser.username}, ${appUser.email}")
-
-                            if (appUser.username.isNotEmpty() && appUser.email.isNotEmpty()) {
-                                // Encode the profile picture URL
-                                val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
-                                navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl/${appUser.uid}")
-                            } else {
-                                loginError = "Login failed. User data is incomplete."
-                                showErrorDialog = true                            }
-                        } else {
-                            loginError = "Login failed. Please check your credentials."
-                            showErrorDialog = true                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                } else {
-                    Text(text = "Masuk", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                }
-            }
-
-
-
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Belum punya akun? Daftar sekarang!",
-                fontSize = 14.sp,
-                color = Color(0xFFB285D4),
-                modifier = Modifier.clickable { navController.navigate("register") }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
                 Divider(color = Color.Gray, thickness = 1.dp)
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Masukkan email/username Anda") },
+                    placeholder = { Text("email@gmail.com") },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Masukkan password Anda") },
+                    placeholder = { Text("Password") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = " atau ",
+                    text = "Lupa password Anda?",
                     fontSize = 14.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    color = Color(0xFFB285D4),
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .clickable { navController.navigate("forget") }
                 )
 
-                Divider(color = Color.Gray, thickness = 1.dp)
-            }
+                Spacer(modifier = Modifier.height(20.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = {
+                        isLoading = true
+                        coroutineScope.launch {
+                            val appUser = loginModel.login(email.text, password.text)
+                            isLoading = false
+                            if (appUser != null) {
+                                println("Login result: appUser = ${appUser.username}, ${appUser.email}")
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "Google",
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable {
-                            loginModel.signInWithGoogle(
-                                onSuccess = { appUser ->
-                                    // Encode the profile picture URL
-                                    Log.d("LoginScreen", "anjeng2")
-                                    Log.d("LoginScreen", "Navigating to community screen with username: ${appUser.uid}")
+                                if (appUser.username.isNotEmpty() && appUser.email.isNotEmpty()) {
                                     val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
                                     navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl/${appUser.uid}")
-                                },
-                                onFailure = { e ->
-                                    Log.d("LoginScreen", "anjeng1")
-
-                                    loginError = "Google sign-in failed: ${e.message}"
-                                    e.printStackTrace()
+                                } else {
+                                    loginError = "Login failed. User data is incomplete."
+                                    showErrorDialog = true
                                 }
-                            )
-                        } // Calls Google sign-in
-                )
-            }
-
-            if (showErrorDialog) {
-                AlertDialog(
-                    onDismissRequest = { closeDialog() },
-                    title = { Text(text = "Login Failed") },
-                    text = { Text(text = loginError ?: "Unknown error") },
-                    confirmButton = {
-                        TextButton(onClick = { closeDialog() }) {
-                            Text("OK")
+                            } else {
+                                loginError = "Login failed. Please check your credentials."
+                                showErrorDialog = true
+                            }
                         }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    } else {
+                        Text(text = "Masuk", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Belum punya akun? Daftar sekarang!",
+                    fontSize = 14.sp,
+                    color = Color(0xFFB285D4),
+                    modifier = Modifier.clickable { navController.navigate("register") }
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Divider(color = Color.Gray, thickness = 1.dp)
+
+                    Text(
+                        text = " atau ",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+
+                    Divider(color = Color.Gray, thickness = 1.dp)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.google),
+                        contentDescription = "Google",
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable {
+                                loginModel.signInWithGoogle(
+                                    onSuccess = { appUser ->
+                                        val encodedProfilePictureUrl = URLEncoder.encode(appUser.profilePictureUrl, StandardCharsets.UTF_8.toString())
+                                        navController.navigate("profile/${appUser.username}/${appUser.email}/$encodedProfilePictureUrl/${appUser.uid}")
+                                    },
+                                    onFailure = { e ->
+                                        loginError = "Google sign-in failed: ${e.message}"
+                                        e.printStackTrace()
+                                    }
+                                )
+                            }
+                    )
+                }
+                Spacer(modifier = Modifier.height(60.dp))
+
+                if (showErrorDialog) {
+                    AlertDialog(
+                        onDismissRequest = { closeDialog() },
+                        title = { Text(text = "Login Failed") },
+                        text = { Text(text = loginError ?: "Unknown error") },
+                        confirmButton = {
+                            TextButton(onClick = { closeDialog() }) {
+                                Text("OK")
+                            }
+                        }
+                    )
+                }
             }
-        }
         }
     }
-
-
-
+}

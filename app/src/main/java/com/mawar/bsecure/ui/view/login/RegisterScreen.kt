@@ -73,7 +73,7 @@ fun RegisterScreen(
                     painter = painterResource(id = R.drawable.back1),
                     contentDescription = "Back",
                     tint = Color.Unspecified,
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier.size(400.dp)
                 )
             }
 
@@ -115,6 +115,7 @@ fun RegisterScreen(
                 text = "Masukkan email Anda",
                 fontSize = 14.sp,
                 color = Color.Black
+
             )
 
             OutlinedTextField(
@@ -122,7 +123,8 @@ fun RegisterScreen(
                 onValueChange = { email = it },
                 label = { Text("Masukkan email Anda") },
                 placeholder = { Text("email@gmail.com") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -132,7 +134,8 @@ fun RegisterScreen(
                 onValueChange = { username = it },
                 label = { Text("Masukkan username Anda") },
                 placeholder = { Text("Username") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -143,7 +146,8 @@ fun RegisterScreen(
                 label = { Text("Masukkan password Anda") },
                 placeholder = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -154,7 +158,8 @@ fun RegisterScreen(
                 label = { Text("Masukkan kembali password Anda") },
                 placeholder = { Text("Re-type Password") },
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -202,21 +207,7 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.google),
-                        contentDescription = "Google",
-                        tint = Color.Unspecified,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clickable {
-                                googleSignInLauncher.launch(signInIntent)
-                            }
-                    )
-                }
+
             }
         }
     }

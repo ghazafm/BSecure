@@ -99,7 +99,7 @@ fun IncomingCallScreen(contactName: String,navController: NavHostController) {
                     Text(text = "Decline", color = Color.White, fontSize = 14.sp)
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    IconButton(onClick = { /* Accept Call Action */ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.accept),
                             contentDescription = "Accept",
@@ -110,6 +110,6 @@ fun IncomingCallScreen(contactName: String,navController: NavHostController) {
                     Text(text = "Accept", color = Color.White, fontSize = 14.sp)
                 }
             }
-        }`
+        }
     }
 }
