@@ -23,10 +23,23 @@ class CommunityRepository {
     suspend fun getPosts(): List<Pair<Post, Map<String, Any>?>> {
         return try {
             val snapshot = firestore.collection("community_posts").get().await()
-            snapshot.documents.map { document ->
-                val post = document.toObject(Post::class.java) ?: Post()
-                val userData = getUserByUid(post.uid) // Fetch user data by uid
-                Pair(post, userData) // Pair post with user data
+            val posts = snapshot.documents.map { document ->
+                document.toObject(Post::class.java)!!.copy(id = document.id)
+            }
+            val userIds = posts.map { it.uid }.distinct()
+            val userDocs = firestore.collection("users")
+                .whereIn("uid", userIds)
+                .get()
+                .await()
+
+            val userDataMap = userDocs.documents.associateBy(
+                { it.id }, // UID as key
+                { it.data ?: emptyMap() } // User data as value
+            )
+
+            posts.map { post ->
+                val userData = userDataMap[post.uid]
+                Pair(post, userData)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -44,30 +57,50 @@ class CommunityRepository {
         }
     }
 
-    suspend fun toggleLike(post: Post, userId: String) {
+    suspend fun toggleLike(post: Post, userId: String): Boolean {
         val postRef = firestore.collection("community_posts").document(post.id)
         val likeRef = postRef.collection("likes").document(userId)
 
-        try {
+        return try {
             val documentSnapshot = likeRef.get().await()
             if (documentSnapshot.exists()) {
                 likeRef.delete().await()
+                false
             } else {
                 likeRef.set(mapOf("userId" to userId)).await()
+                true
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            false
         }
     }
 
+    suspend fun checkIfUserLikedPost(post: Post, userId: String): Boolean {
+        return try {
+            val likeSnapshot = firestore
+                .collection("community_posts")
+                .document(post.id)
+                .collection("likes")
+                .document(userId)
+                .get()
+                .await()
+            likeSnapshot.exists() // If document exists, user has liked the post
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+
     suspend fun getLikesCount(post: Post): Int {
         return try {
-            val likesSnapshot = firestore.collection("community_posts")
+            firestore.collection("community_posts")
                 .document(post.id)
                 .collection("likes")
                 .get()
                 .await()
-            likesSnapshot.size()
+                .size()
         } catch (e: Exception) {
             e.printStackTrace()
             0
@@ -110,12 +143,12 @@ class CommunityRepository {
 
     suspend fun getCommentsCount(post: Post): Int {
         return try {
-            val likesSnapshot = firestore.collection("community_posts")
+            firestore.collection("community_posts")
                 .document(post.id)
                 .collection("comments")
                 .get()
                 .await()
-            likesSnapshot.size()
+                .size()
         } catch (e: Exception) {
             e.printStackTrace()
             0
