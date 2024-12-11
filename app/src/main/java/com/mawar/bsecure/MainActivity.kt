@@ -3,6 +3,7 @@ package com.mawar.bsecure
 import AuthRepository
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -21,15 +22,15 @@ import com.mawar.bsecure.repository.PhoneAuthRepository
 import com.mawar.bsecure.ui.theme.BSecureTheme
 import com.mawar.bsecure.ui.view.community.CommunityPostDetailScreen
 import com.mawar.bsecure.ui.view.community.CommunityScreen
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var loginModel: LoginModel
     private lateinit var authRepository: AuthRepository
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
     private lateinit var phoneAuthRepository: PhoneAuthRepository
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +50,8 @@ class MainActivity : ComponentActivity() {
             val data: Intent? = result.data
             loginModel.handleGoogleSignInResult(data,
                 onSuccess = { appUser ->
+                    Log.d("LoginScreen", "memek2")
+                    Log.d("WOI ANJENG", "${appUser.uid},${appUser.username}")
                     userDetailsState.value = appUser // Set the full AppUser object
                 },
                 onFailure = { e ->
