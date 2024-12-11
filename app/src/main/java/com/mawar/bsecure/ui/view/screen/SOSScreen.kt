@@ -59,6 +59,7 @@ import androidx.navigation.NavHostController
 import com.mawar.bsecure.data.emergency.EmergencyService
 import com.mawar.bsecure.data.emergency.EmergencyServiceData
 import com.mawar.bsecure.data.emergency.EmergencyServiceUtils
+import com.mawar.bsecure.data.emergency.FirestoreEmergencyService
 import com.mawar.bsecure.data.emergency.ServiceLocation
 import com.mawar.bsecure.ui.view.Beranda.Bottom
 import com.mawar.bsecure.ui.view.Beranda.TopBars
@@ -171,8 +172,9 @@ fun EmergencyServicesDialog(
                                         shape = RoundedCornerShape(12.dp)
                                     )
                                     .clickable {
-                                        EmergencyServiceUtils.getNearestEmergencyService(context, userLocation)
-
+                                        val userLatitude = userLocation.latitude
+                                        val userLongitude = userLocation.longitude
+                                        FirestoreEmergencyService.callNearestService(context, userLatitude, userLongitude, service)
                                     }
                                     .padding(16.dp),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -234,18 +236,21 @@ fun EmergencyServicesDialog(
 }
 
 // Fungsi untuk mencari lokasi terdekat
-private fun findNearestLocation(locations: List<ServiceLocation>, userLocation: Location): ServiceLocation? {
+fun findNearestLocation(userLatitude: Double, userLongitude: Double, service: EmergencyService): ServiceLocation? {
     var nearestLocation: ServiceLocation? = null
-    var nearestDistance: Float = Float.MAX_VALUE
+    var shortestDistance = Float.MAX_VALUE
 
-    locations.forEach { location ->
-        val serviceLocation = Location("").apply {
-            latitude = location.latitude
-            longitude = location.longitude
-        }
-        val distance = userLocation.distanceTo(serviceLocation)
-        if (distance < nearestDistance) {
-            nearestDistance = distance
+    for (location in service.locations) {
+        val results = FloatArray(1)
+        Location.distanceBetween(
+            userLatitude,
+            userLongitude,
+            location.latitude,
+            location.longitude,
+            results
+        )
+        if (results[0] < shortestDistance) {
+            shortestDistance = results[0]
             nearestLocation = location
         }
     }
