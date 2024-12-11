@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,7 +29,6 @@ import com.mawar.bsecure.ui.helper.Formatter.formatTimestamp
 import com.mawar.bsecure.ui.viewModel.community.CommunityViewModel
 import com.mawar.bsecure.ui.viewModel.community.CommunityViewModelFactory
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityScreen(onPostClick: (Post) -> Unit, onCommentClick: (Post) -> Unit, navApp: NavController, uid: String) {
     val communityViewModel: CommunityViewModel = viewModel(factory = CommunityViewModelFactory(CommunityRepository()))
@@ -43,49 +43,71 @@ fun CommunityScreen(onPostClick: (Post) -> Unit, onCommentClick: (Post) -> Unit,
     val isLoading by communityViewModel.isLoading.collectAsState()
     val errorMessage by communityViewModel.errorMessage.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        HeaderSection(navApp, title = "Komunitas")
-
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-        } else if (!errorMessage.isNullOrEmpty()) {
-            Text(text = "Error: $errorMessage", color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
-        } else {
-            LazyColumn(modifier = Modifier.padding(16.dp)) {
-                items(posts) { post ->
-                    CommunityPostItem(
-                        post = post,
-                        userData = communityViewModel.userCache[post.uid] ?: emptyMap(),
-                        onClick = { onPostClick(post) },
-                        onLikeClick = { communityViewModel.toggleLike(post, uid) },
-                        onCommentClick = { onCommentClick(post) },
-                        likesCount = communityViewModel.likesCount.collectAsState().value[post.id] ?: 0
-                    )
-                    Divider(thickness = 0.5.dp, color = Color.Gray)
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    Log.d("CommunityScreen", "Navigating to addCommunity with UID: $uid")
+                    navApp.navigate("addCommunity/$uid")
+                },
+                containerColor = MaterialTheme.colorScheme.primary, // Warna latar FAB
+                contentColor = Color.White // Warna konten (ikon) di dalam FAB
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.add),
+                    contentDescription = "Add New Post",
+                    tint = Color.White,
+                    modifier = Modifier.size(30.dp)
+                )
             }
         }
+    ){
+        paddingValues ->
 
-        Spacer(modifier = Modifier.weight(1f))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(Color.White)
+        ) {
+            HeaderSection(navApp, title = "Komunitas")
+            Spacer(modifier = Modifier.height(16.dp))
 
-        IconButton(onClick = {
-            Log.d("CommunityScreen", "Navigating to addCommunity with UID: $uid")
-            navApp.navigate("addCommunity/$uid")
-        }) {
-            Icon(
-                painter = painterResource(id = R.drawable.apple),
-                contentDescription = "Add New Post",
-                tint = Color.Black,
-                modifier = Modifier.size(30.dp)
-            )
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            } else if (!errorMessage.isNullOrEmpty()) {
+                Text(text = "Error: $errorMessage", color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
+            } else {
+
+                LazyColumn(modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxSize()
+                )
+                {
+
+
+                    items(posts) { post ->
+                        CommunityPostItem(
+                            post = post,
+                            userData = communityViewModel.userCache[post.uid] ?: emptyMap(),
+                            onClick = { onPostClick(post) },
+                            onLikeClick = { communityViewModel.toggleLike(post, uid) },
+                            onCommentClick = { onCommentClick(post) },
+                            likesCount = communityViewModel.likesCount.collectAsState().value[post.id] ?: 0
+//                            commentCount = communityViewModel.commentCount.collectAsState().value[post.id] ?: 0
+                        )
+                        Divider(thickness = 0.5.dp, color = Color.Gray)
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+            }
+
+
         }
     }
+
 }
+
 
 @Composable
 fun HeaderSection(navApp: NavController, title: String) {
@@ -133,24 +155,53 @@ fun CommunityPostItem(
     onClick: () -> Unit,
     onLikeClick: (Post) -> Unit,
     onCommentClick: (Post) -> Unit,
-    likesCount: Int
+    likesCount: Int,
+//    commentCount : Int
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(8.dp),
-        verticalAlignment = Alignment.Top
+            .padding(8.dp)
     ) {
-        PostItemUserSection(
-            profilePictureUrl = userData?.get("profilePictureUrl").toString(),
-            username = userData?.get("username") as? String ?: "User"
+        AsyncImage(
+            model = userData?.get("profilePictureUrl"),
+            contentDescription = userData?.get("username") as? String ?: "User",
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color.Gray, CircleShape),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
         )
 
         Spacer(modifier = Modifier.width(8.dp))
+
         Column {
-            Text(text = post.content, fontSize = 14.sp)
-            Spacer(modifier = Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = userData?.get("username") as? String ?: "User",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "@${userData?.get("username") as? String ?: "User"}",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = formatTimestamp(post.timestamp),
+                    fontSize = 12.sp,
+                    color = Color(0xFF9E9E9E)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(text = post.content, fontSize = 14.sp, color = Color.Black)
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -159,15 +210,23 @@ fun CommunityPostItem(
             ) {
                 IconButton(onClick = { onCommentClick(post) }) {
                     Icon(painter = painterResource(id = R.drawable.outline_comment_24), contentDescription = "Comment")
+
                 }
+//                Text(text = commentCount.toString(), color = Color.Gray, fontSize = 12.sp)
 
                 IconButton(onClick = { onLikeClick(post) }) {
                     Icon(
-                        painter = painterResource(id = if (likesCount > 0) R.drawable.like else R.drawable.like),
+                        painter = painterResource(id = if (likesCount > 0) R.drawable.likehijau else R.drawable.like),
                         contentDescription = "Like"
                     )
-                    Text(text = likesCount.toString(), color = Color.Gray, fontSize = 12.sp)
                 }
+
+                Text(text = likesCount.toString(),
+                    color = Color.Gray,
+                    fontSize = 12.sp,
+                    modifier = Modifier.offset(-30.dp)
+
+                )
 
                 Text(text = formatTimestamp(post.timestamp), color = Color.Gray, fontSize = 12.sp)
             }
@@ -188,8 +247,7 @@ fun PostItemUserSection(profilePictureUrl: String?, username: String) {
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Column {
-            Text(text = username, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        }
+        Text(text = username, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+
     }
 }
