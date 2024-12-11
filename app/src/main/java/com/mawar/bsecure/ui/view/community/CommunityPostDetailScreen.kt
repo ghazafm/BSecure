@@ -39,6 +39,7 @@ import com.mawar.bsecure.ui.viewModel.community.CommunityViewModelFactory
 fun CommunityPostDetailScreen(
     uid: String,
     post: Post,
+    onPostClick: (Post) -> Unit,
     userData: Map<String, Any>?,
     onCommentClick: (Post) -> Unit,
     navController: NavController
@@ -65,25 +66,28 @@ fun CommunityPostDetailScreen(
                 .background(Color.White)
                 .padding(bottom = 64.dp) // Memberikan ruang untuk TextField
         ) {
-            HeadSec(navController)
-
-            PostDetailSection(
-                post = post,
-                userData = userData,
-                onLikeClick = { communityViewModel.toggleLike(post, uid) },
-                onCommentClick = { onCommentClick(post) },
-                likesCount = communityViewModel.likesCount.collectAsState().value[post.id] ?: 0,
-                commentsCount = communityViewModel.commentsCount.collectAsState().value[post.id] ?: 0
-            )
-
-            Divider(thickness = 0.5.dp, color = Color.Gray)
-
-            // Comment List
+            HeadSec(uid,navController)
+            Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
                     .fillMaxSize()
             ) {
+
+                item {
+                    CommunityPostItem(
+                        post = post,
+                        userData = communityViewModel.userCache[post.uid] ?: emptyMap(),
+                        onClick = { onPostClick(post) },
+                        onLikeClick = { communityViewModel.toggleLike(post, uid) },
+                        onCommentClick = { onCommentClick(post) },
+                        likesCount = communityViewModel.likesCount.collectAsState().value[post.id] ?: 0,
+                        commentsCount = communityViewModel.commentsCount.collectAsState().value[post.id] ?: 0
+                    )
+
+                    Divider(thickness = 0.5.dp, color = Color.Gray)
+                }
+
                 items(comments) { comment ->
                     CommentItem(
                         post = comment,
@@ -141,7 +145,7 @@ fun CommunityPostDetailScreen(
     }
 }
 @Composable
-fun HeadSec(navController: NavController) {
+fun HeadSec(uid: String,navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,7 +159,7 @@ fun HeadSec(navController: NavController) {
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { navController.navigateUp() }) {
+            IconButton(onClick = { navController.navigate("community/$uid") }) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_keyboard_backspace_24),
                     contentDescription = "Back",
@@ -232,7 +236,7 @@ fun PostDetailSection(
 
                     IconButton(onClick = { onLikeClick(post) }) {
                         Icon(
-                            painter = painterResource(id = if (post.isLikedByCurrentUser) R.drawable.likehijau else R.drawable.like),
+                            painter = painterResource(id = if (post.isLikedByCurrentUser) R.drawable.apple else R.drawable.like),
                             contentDescription = "Like"
                         )
                     }

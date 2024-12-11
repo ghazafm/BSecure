@@ -50,7 +50,7 @@ fun CommunityScreen(onPostClick: (Post) -> Unit, onCommentClick: (Post) -> Unit,
                     Log.d("CommunityScreen", "Navigating to addCommunity with UID: $uid")
                     navApp.navigate("addCommunity/$uid")
                 },
-                containerColor = MaterialTheme.colorScheme.primary, // Warna latar FAB
+                containerColor = Color(0xFF9C43F5), // Warna latar FAB
                 contentColor = Color(0xFF5A2D82) // Warna konten (ikon) di dalam FAB
             ) {
                 Icon(
@@ -175,7 +175,8 @@ fun CommunityPostItem(
                 Text(
                     text = userData?.get("username") as? String ?: "User",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    color = Color.Black
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -203,7 +204,9 @@ fun CommunityPostItem(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 IconButton(onClick = { onCommentClick(post) }) {
-                    Icon(painter = painterResource(id = R.drawable.outline_comment_24), contentDescription = "Comment")
+                    Icon(painter = painterResource(id = R.drawable.outline_comment_24), contentDescription = "Comment", tint = Color.Black
+                    )
+
 
                 }
                 Text(text = commentsCount.toString(),
@@ -216,8 +219,10 @@ fun CommunityPostItem(
                 IconButton(onClick = { onLikeClick(post) }) {
                     Icon(
                         painter = painterResource(id = if (post.isLikedByCurrentUser) R.drawable.likehijau else R.drawable.like),
-                        contentDescription = "Like"
+                        contentDescription = "Like",
+                        tint = if (post.isLikedByCurrentUser) Color.Red else Color.Black // Hitam sebelum klik, merah setelah klik
                     )
+
                 }
 
                 Text(text = likesCount.toString(),
