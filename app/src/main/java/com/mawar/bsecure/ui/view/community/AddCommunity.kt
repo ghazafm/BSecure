@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -128,15 +129,17 @@ fun AddCommunity(uid: String, navController: NavController, repository: Communit
                 fontSize = 20.sp
             )
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = {
                     viewModel.addPost(uid = uid, contentCommunity.text)
                     navController.navigate("community/$uid")
                 },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C43F5))
             ) {
-                Text(text = "Kirim")
+                Text(text = "Kirim",
+                color = Color.White)
             }
         }
         Row(
