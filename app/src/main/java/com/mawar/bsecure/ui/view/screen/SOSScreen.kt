@@ -30,8 +30,17 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -50,18 +59,23 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.Task
 import com.mawar.bsecure.data.emergency.EmergencyService
 import com.mawar.bsecure.data.emergency.EmergencyServiceData
+import com.mawar.bsecure.data.emergency.EmergencyServiceUtils
 import com.mawar.bsecure.data.emergency.FirestoreEmergencyService
 import com.mawar.bsecure.data.emergency.ServiceLocation
-import com.mawar.bsecure.ui.helper.LocationHelper.getLastKnownLocation
 import com.mawar.bsecure.ui.view.Beranda.Bottom
 import com.mawar.bsecure.ui.view.Beranda.TopBars
+
+import kotlinx.coroutines.launch
 
 @Composable
 fun SOSScreen(
@@ -140,33 +154,33 @@ fun SOSScreen(
                     Text("Sedang mendapatkan lokasi...", fontSize = 16.sp, color = Color.Gray)
                 }
 
-                if (showDialog.value) {
-                    userLocation?.let {
-                        EmergencyServicesDialog(
-                            showDialog = showDialog,
-                            emergencyServices = emergencyServices,
-                            context = context,
-                            userLocation = it
-                        )
-                    }
-                }
+//                if (showDialog.value) {
+//                    userLocation?.let {
+//                        EmergencyServicesDialog(
+//                            showDialog = showDialog,
+//                            emergencyServices = emergencyServices,
+//                            context = context,
+//                            userLocation = it
+//                        )
+//                    }
+//                }
             }
         }
     }
 }
 
-//fun getLastKnownLocation(
-//    fusedLocationClient: FusedLocationProviderClient,
-//    onLocationReceived: (Location?) -> Unit
-//) {
-//    fusedLocationClient.lastLocation.addOnCompleteListener { task: Task<Location> ->
-//        if (task.isSuccessful && task.result != null) {
-//            onLocationReceived(task.result)
-//        } else {
-//            onLocationReceived(null)
-//        }
-//    }
-//}
+fun getLastKnownLocation(
+    fusedLocationClient: FusedLocationProviderClient,
+    onLocationReceived: (Location?) -> Unit
+) {
+    fusedLocationClient.lastLocation.addOnCompleteListener { task: Task<Location> ->
+        if (task.isSuccessful && task.result != null) {
+            onLocationReceived(task.result)
+        } else {
+            onLocationReceived(null)
+        }
+    }
+}
 
 
 
@@ -177,7 +191,9 @@ fun EmergencyServicesDialog(
     showDialog: MutableState<Boolean>,
     emergencyServices: List<EmergencyService>,
     context: Context,
-    userLocation: Location
+    userLocation: Location,
+    userAddress: String // New parameter for address
+
 ) {
     if (showDialog.value) {
         Dialog(
@@ -194,7 +210,7 @@ fun EmergencyServicesDialog(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = "Layanan Darurat",
+                        text = "Layanan Darurat di $userAddress", // Show the formatted address
                         style = MaterialTheme.typography.h6,
                         color = Color.Black,
                         modifier = Modifier.padding(bottom = 16.dp)
