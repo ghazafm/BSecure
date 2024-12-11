@@ -1,6 +1,10 @@
 package com.mawar.bsecure.ui.view.Beranda
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.icu.text.CaseMap.Title
+import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,9 +13,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
@@ -40,20 +46,29 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
+import com.google.android.gms.location.LocationServices
+import com.mawar.bsecure.data.emergency.EmergencyServiceData
+import com.mawar.bsecure.ui.view.screen.EmergencyServicesDialog
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,10 +92,10 @@ fun TopBars() {
 
 @Composable
 fun Bottom(navController: NavHostController, userName: String, email: String, profilePictureUrl: String, uid: String) {
+    Box(modifier = Modifier.fillMaxWidth()) {
         NavigationBar (
-            modifier = Modifier,
+            modifier = Modifier.align(Alignment.BottomCenter),
             containerColor = Color(0xFF7346A5)
-
         ){
             NavigationBarItem(
                 icon = { Icon(Icons.Filled.AddCircle, contentDescription = "community") },
@@ -94,8 +109,10 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
                     unselectedIconColor = Color.White,
                     unselectedTextColor = Color.White,
                     disabledIconColor = Color.White,
-                    disabledTextColor = Color.White)
+                    disabledTextColor = Color.White
+                )
             )
+
             NavigationBarItem(
                 icon = { Icon(Icons.Filled.Call, contentDescription = "call") },
                 label = { Text("Panggilan Palsu", textAlign = TextAlign.Center) },
@@ -114,6 +131,9 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
                     disabledTextColor = Color.White
                 )
             )
+
+            Spacer(modifier = Modifier.weight(1f)) // Space for SOS Button
+
             NavigationBarItem(
                 icon = { Icon(Icons.Filled.LocationOn, contentDescription = "location") },
                 label = { Text("Lokasi") },
@@ -132,6 +152,7 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
                     disabledTextColor = Color.White
                 )
             )
+
             NavigationBarItem(
                 icon = { Icon(Icons.Filled.Person, contentDescription = "profile") },
                 label = { Text("Profil") },
@@ -150,10 +171,74 @@ fun Bottom(navController: NavHostController, userName: String, email: String, pr
                     disabledTextColor = Color.White
                 )
             )
-
-
         }
+        val context = LocalContext.current
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        val geocoder = Geocoder(context, Locale.getDefault())
+        val showDialog = remember { mutableStateOf(false) }
+
+
+        // Floating SOS Button
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = (-60).dp)
+                .background(Color.Red, shape = CircleShape)
+                .size(85.dp)
+                .clickable {
+                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                        ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        // Get the last known location
+                        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                            location?.let {
+                                // Convert location to address
+                                val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 1)
+                                if (addresses.isNotEmpty()) {
+                                    val country = addresses[0].countryName ?: ""
+                                    val province = addresses[0].adminArea ?: ""
+                                    val city = addresses[0].locality ?: ""
+                                    val district = addresses[0].subAdminArea ?: ""
+                                    val subDistrict = addresses[0].subLocality ?: ""
+
+                                    // Call the ViewModel function to get SOS data
+                                    sosViewModel.getSosByLocation(country, province, city, district, subDistrict)
+
+                                    // Show dialog
+                                    showDialog.value = true
+                                }
+                            }
+                        }
+                    } else {
+                        // Handle permission not granted
+                        // You may want to request permissions here
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "SOS",
+                color = Color.White,
+                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp),
+                textAlign = TextAlign.Center
+            )
+        }
+        val userLocation = Location("").apply {
+            // Ganti dengan koordinat lokasi pengguna yang sebenarnya
+            latitude = -7.980800
+            longitude = 112.645500
+        }
+        if (showDialog.value) {
+            EmergencyServicesDialog(
+                showDialog = showDialog,
+                emergencyServices = emergencyServices,
+                context = context,
+                userLocation = userLocation
+            )
+        }
+    }
 }
+
+
 
 @Composable
 fun floatSOS() {
