@@ -107,4 +107,18 @@ class CommunityRepository {
             e.printStackTrace()
         }
     }
+
+    suspend fun getCommentsCount(post: Post): Int {
+        return try {
+            val likesSnapshot = firestore.collection("community_posts")
+                .document(post.id)
+                .collection("comments")
+                .get()
+                .await()
+            likesSnapshot.size()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0
+        }
+    }
 }
