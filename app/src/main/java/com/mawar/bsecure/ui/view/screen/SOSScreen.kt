@@ -2,7 +2,6 @@ package com.mawar.bsecure.ui.view.screen
 
 import android.content.Context
 import android.location.Location
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,9 +23,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -42,54 +51,78 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavHostController
 import com.mawar.bsecure.data.emergency.EmergencyService
 import com.mawar.bsecure.data.emergency.EmergencyServiceData
 import com.mawar.bsecure.data.emergency.EmergencyServiceUtils
-import com.mawar.bsecure.data.emergency.PhoneUtils
 import com.mawar.bsecure.data.emergency.ServiceLocation
+import com.mawar.bsecure.ui.view.Beranda.Bottom
+import com.mawar.bsecure.ui.view.Beranda.TopBars
+import com.mawar.bsecure.ui.view.Beranda.floatBar
+
+import com.mawar.bsecure.ui.view.Beranda.floatNotif
+import kotlinx.coroutines.launch
 
 @Composable
-fun CommunityScreen() {
+fun SOSScreen(
+    navController: NavHostController,
+    username: String,
+    email: String,
+    profilePictureUrl: String,
+    uid: String
+) {
     val context = LocalContext.current
     val emergencyServices = EmergencyServiceData.getEmergencyServices()
     val showDialog = remember { mutableStateOf(false) }
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
-            .background(Brush.verticalGradient(colors = listOf(Color(0xFFF1EFEF), Color(0x97C5BBBB))))
+    Scaffold(
+        topBar = { TopBars() },
+        bottomBar = { Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid) }
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(
-                onClick = { showDialog.value = true },
-                modifier = Modifier
-                    .size(150.dp),
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(Color.Red)
-            ) {
-                Text("SOS", fontSize = 40.sp, color = Color.White)
-            }
+            innerPadding ->
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+                .padding(innerPadding)
+                .background(Brush.verticalGradient(colors = listOf(Color(0xFFF1EFEF), Color(0x97C5BBBB))))
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = { showDialog.value = true },
+                    modifier = Modifier
+                        .size(150.dp),
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(Color.Red)
+                ) {
+                    Text("SOS", fontSize = 40.sp, color = Color.White)
+                }
 
-            Spacer(modifier = Modifier.height(40.dp))
-            val userLocation = Location("").apply {
-                // Ganti dengan koordinat lokasi pengguna yang sebenarnya
-                latitude = -7.980800
-                longitude = 112.645500
-            }
-            if (showDialog.value) {
-                EmergencyServicesDialog(
-                    showDialog = showDialog,
-                    emergencyServices = emergencyServices,
-                    context = context,
-                    userLocation = userLocation
-                )
+                Spacer(modifier = Modifier.height(40.dp))
+                val userLocation = Location("").apply {
+                    // Ganti dengan koordinat lokasi pengguna yang sebenarnya
+                    latitude = -7.980800
+                    longitude = 112.645500
+                }
+                if (showDialog.value) {
+                    EmergencyServicesDialog(
+                        showDialog = showDialog,
+                        emergencyServices = emergencyServices,
+                        context = context,
+                        userLocation = userLocation
+                    )
+                }
             }
         }
     }
 }
+
+
+
+
 
 @Composable
 fun EmergencyServicesDialog(

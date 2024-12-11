@@ -22,7 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.mawar.bsecure.R
+import com.mawar.bsecure.ui.view.Beranda.Bottom
+import com.mawar.bsecure.ui.view.Beranda.TopBars
 import com.mawar.bsecure.ui.viewModel.fakeCall.TimerViewModel
 
 import kotlinx.coroutines.launch
@@ -32,7 +35,10 @@ import kotlinx.coroutines.launch
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun FakeCallScreen(navController: NavController, timerViewModel: TimerViewModel) {
+    fun FakeCallScreen(navController: NavHostController, timerViewModel: TimerViewModel,username: String,
+                       email: String,
+                       profilePictureUrl: String,
+                       uid: String) {
         var fromText by remember { mutableStateOf(TextFieldValue("")) }
         var selectedHours by remember { mutableStateOf(0) }
         var selectedMinutes by remember { mutableStateOf(0) }
@@ -47,147 +53,155 @@ import kotlinx.coroutines.launch
                 navController.navigate("incoming_call/${fromText.text}")
             }
         }
-
-                Box(
+        Scaffold(
+            topBar = { TopBars() },
+            bottomBar = {Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid)}
+        ) {
+            innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(Color(0xFF41275D)),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0xFF41275D)),
-                    contentAlignment = Alignment.TopCenter
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
+                    Text(
+                        text = "From :",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.align(Alignment.Start)
+                            .padding(top = 65.dp)
+                    )
+
+                    TextField(
+                        value = fromText,
+                        onValueChange = { fromText = it },
+                        placeholder = { Text("Type Here", color = Color.Gray) },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Gray,
+                            unfocusedBorderColor = Color.Gray,
+                            cursorColor = Color.White
+                        ),
+                        textStyle = LocalTextStyle.current.copy(color = Color.White),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = "Set Timer :",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .padding(top = 16.dp)
                     ) {
+                        TimePickerColumn(
+                            range = 0..23,
+                            selectedValue = selectedHours,
+                            onValueChange = { selectedHours = it },
+                            label = "Hours"
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "From :",
+                            ":",
                             color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.align(Alignment.Start)
-                                .padding(top = 65.dp)
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold
                         )
-
-                        TextField(
-                            value = fromText,
-                            onValueChange = { fromText = it },
-                            placeholder = { Text("Type Here", color = Color.Gray) },
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Gray,
-                                unfocusedBorderColor = Color.Gray,
-                                cursorColor = Color.White
-                            ),
-                            textStyle = LocalTextStyle.current.copy(color = Color.White),
-                            modifier = Modifier.fillMaxWidth()
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TimePickerColumn(
+                            range = 0..59,
+                            selectedValue = selectedMinutes,
+                            onValueChange = { selectedMinutes = it },
+                            label = "Minutes"
                         )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Set Timer :",
+                            ":",
                             color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.align(Alignment.Start)
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TimePickerColumn(
+                            range = 0..59,
+                            selectedValue = selectedSeconds,
+                            onValueChange = { selectedSeconds = it },
+                            label = "Seconds"
+                        )
+                    }
 
+                    Spacer(modifier = Modifier.height(15.dp))
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp)
-                        ) {
-                            TimePickerColumn(
-                                range = 0..23,
-                                selectedValue = selectedHours,
-                                onValueChange = { selectedHours = it },
-                                label = "Hours"
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                ":",
-                                color = Color.White,
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            TimePickerColumn(
-                                range = 0..59,
-                                selectedValue = selectedMinutes,
-                                onValueChange = { selectedMinutes = it },
-                                label = "Minutes"
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                ":",
-                                color = Color.White,
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            TimePickerColumn(
-                                range = 0..59,
-                                selectedValue = selectedSeconds,
-                                onValueChange = { selectedSeconds = it },
-                                label = "Seconds"
-                            )
+                    // Preset Timer Buttons
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(45.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                    ) {
+                        PresetTimerButton(label = "00:05", buttonColor = Color(0x33D9D9D9)) {
+                            timerViewModel.startTimer(5)
                         }
+                        PresetTimerButton(label = "00:10", buttonColor = Color(0x33D9D9D9)) {
+                            timerViewModel.startTimer(10)
+                        }
+                        PresetTimerButton(label = "00:15", buttonColor = Color(0x33D9D9D9)) {
+                            timerViewModel.startTimer(15)
+                        }
+                    }
 
-                        Spacer(modifier = Modifier.height(15.dp))
+                    // Display Remaining Time
+                    if (remainingTime > 0) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Waktu tersisa: $remainingTime detik",
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
 
-                        // Preset Timer Buttons
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(45.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp)
-                        ) {
-                            PresetTimerButton(label = "00:05", buttonColor = Color(0x33D9D9D9)) {
-                                timerViewModel.startTimer(5)
+                    // Move Start Button to the Bottom
+                    Spacer(modifier = Modifier.height(20.dp)) // Add extra space above Start Button
+                    Button(
+                        onClick = {
+                            val duration =
+                                selectedHours * 3600 + selectedMinutes * 60 + selectedSeconds
+                            if (duration > 0 && fromText.text.isNotBlank()) {
+                                timerViewModel.startTimer(duration)
                             }
-                            PresetTimerButton(label = "00:10", buttonColor = Color(0x33D9D9D9)) {
-                                timerViewModel.startTimer(10)
-                            }
-                            PresetTimerButton(label = "00:15", buttonColor = Color(0x33D9D9D9)) {
-                                timerViewModel.startTimer(15)
-                            }
-                        }
-
-                        // Display Remaining Time
-                        if (remainingTime > 0) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Waktu tersisa: $remainingTime detik",
-                                fontSize = 20.sp,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-
-                        // Move Start Button to the Bottom
-                        Spacer(modifier = Modifier.height(20.dp)) // Add extra space above Start Button
-                        Button(
-                            onClick = {
-                                val duration =
-                                    selectedHours * 3600 + selectedMinutes * 60 + selectedSeconds
-                                if (duration > 0 && fromText.text.isNotBlank()) {
-                                    timerViewModel.startTimer(duration)
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA5DD9B)),
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = Modifier
-                                .width(120.dp)
-                                .align(Alignment.CenterHorizontally)
-                        ) {
-                            Text(text = "Start", color = Color.White, fontSize = 30.sp)
-                        }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA5DD9B)),
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier
+                            .width(120.dp)
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        Text(text = "Start", color = Color.White, fontSize = 30.sp)
                     }
                 }
             }
+        }
+        }
+
+
 
 
 

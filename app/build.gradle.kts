@@ -1,18 +1,10 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
-    kotlin("kapt")
+    id("kotlin-kapt") // Tambahkan ini untuk Hilt
     id("dagger.hilt.android.plugin") // Tambahkan ini untuk Hilt
 }
-
-val localProperties = Properties()
-file(rootProject.file("local.properties")).inputStream().use { inputStream ->
-    localProperties.load(inputStream)
-}
-val googleMapsApiKey: String = localProperties["GOOGLE_MAPS_API_KEY"] as String
 
 android {
     namespace = "com.mawar.bsecure"
@@ -29,8 +21,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = googleMapsApiKey
-        buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"$googleMapsApiKey\"")
     }
 
     buildTypes {
@@ -54,7 +44,6 @@ android {
 
     buildFeatures {
         compose = true
-        buildConfig = true
     }
 
     composeOptions {
@@ -148,4 +137,3 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
-
