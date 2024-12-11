@@ -8,7 +8,7 @@ object EmergencyServiceData {
         return listOf(
             EmergencyService(
                 name = "Pemadam Kebakaran",
-                phoneNumbers = listOf("081267783531", "081267783531", "081267783531"), // Beberapa nomor telepon
+                phoneNumbers = listOf("082137780052", "081267783531", "081267783531"), // Beberapa nomor telepon
                 iconResId = R.drawable.facebook,
                 locations = listOf(
                     ServiceLocation("123-1", -7.966620, 112.632632),
