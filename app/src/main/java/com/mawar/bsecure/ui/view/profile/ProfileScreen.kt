@@ -22,111 +22,127 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.mawar.bsecure.R
+import com.mawar.bsecure.ui.view.Beranda.Bottom
+import com.mawar.bsecure.ui.view.Beranda.TopBars
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Composable
-fun ProfileScreen(navController: NavHostController, userName: String, email: String, profilePictureUrl: String, uid: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF5A2D82), shape = RoundedCornerShape(bottomEnd = 30.dp, bottomStart = 30.dp))
-                .height(100.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
+fun ProfileScreen(navController: NavHostController, username: String, email: String, profilePictureUrl: String, uid: String) {
+    Scaffold(
+        topBar = {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .background(Color(0xFF5A2D82), shape = RoundedCornerShape(bottomEnd = 30.dp, bottomStart = 30.dp))
+                    .height(100.dp),
+                contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = { /* Handle back button click */ }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_keyboard_backspace_24),
-                        contentDescription = "Back",
-                        tint = Color.White,
-                        modifier = Modifier.size(30.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val encodedProfilePictureUrl = URLEncoder.encode(profilePictureUrl, StandardCharsets.UTF_8.toString())
+                    IconButton(onClick = {navController.navigate("sos/$username/$email/$encodedProfilePictureUrl/$uid")}) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_keyboard_backspace_24),
+                            contentDescription = "Back",
+                            tint = Color.White,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(0.65f))
+
+                    Text(
+                        text = "Profile",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
                     )
-                }
 
-                Spacer(modifier = Modifier.weight(0.65f))
+                    Spacer(modifier = Modifier.weight(1f))
+                }}
+        },
+        bottomBar = { Bottom(navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid=uid) }
 
-                Text(
-                    text = "Profile",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-            }
-        }
-
+    ) {
+        innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .padding(innerPadding)
+                .background(Color.White),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Use default image if profilePictureUrl is empty
-            val profilePicture = if (profilePictureUrl.isNotEmpty()) {
-                rememberImagePainter(data = profilePictureUrl)
-            } else {
-                painterResource(id = R.drawable.user) // Use the default image
+
             }
-            Image(
-                painter = profilePicture,
-                contentDescription = "Profile Picture",
+
+            Column(
                 modifier = Modifier
-                    .size(125.dp)
-                    .clip(CircleShape)
-                    .background(Color.Gray, CircleShape),
-                contentScale = ContentScale.Crop
-            )
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(100.dp))
+                // Use default image if profilePictureUrl is empty
+                val profilePicture = if (profilePictureUrl.isNotEmpty()) {
+                    rememberImagePainter(data = profilePictureUrl)
+                } else {
+                    painterResource(id = R.drawable.user) // Use the default image
+                }
+                Image(
+                    painter = profilePicture,
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .size(125.dp)
+                        .clip(CircleShape)
+                        .background(Color.Gray, CircleShape),
+                    contentScale = ContentScale.Crop
+                )
 
 
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            // User name and handle
-            Text(
-                text = "$userName",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
+                // User name and handle
+                Text(
+                    text = "$username",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
 
-            Text(
-                text = "$email",
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
+                Text(
+                    text = "$email",
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
 
-            Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
-            ProfileOption("Ubah Profil"){
-                val encodedProfilePictureUrl = URLEncoder.encode(profilePictureUrl, StandardCharsets.UTF_8.toString())
-                navController.navigate("edit_profile/$userName/$email/$encodedProfilePictureUrl")
-            }
-            ProfileOption("Terhubung Dengan Kami"){
-                navController.navigate("contact")
-            }
-            ProfileOption("Kebijakan"){
-                navController.navigate("kebijakan")
-            }
-            ProfileOption("Community"){
-                navController.navigate("community/$uid")
+                ProfileOption("Ubah Profil"){
+                    val encodedProfilePictureUrl = URLEncoder.encode(profilePictureUrl, StandardCharsets.UTF_8.toString())
+                    navController.navigate("edit_profile/$username/$email/$encodedProfilePictureUrl")
+                }
+                ProfileOption("Terhubung Dengan Kami"){
+                    navController.navigate("contact")
+                }
+                ProfileOption("Kebijakan"){
+                    navController.navigate("kebijakan")
+                }
+                ProfileOption("Community"){
+                    navController.navigate("community/$uid")
+                }
             }
         }
     }
-}
+
+
+
 
 @Composable
 fun ProfileOption(text: String, onClick: () -> Unit = {}) {
