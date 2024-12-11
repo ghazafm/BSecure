@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mawar.bsecure.model.AppUser
@@ -68,6 +69,7 @@ class MainActivity : ComponentActivity() {
             db = FirebaseFirestore.getInstance()
         )
 
+        installSplashScreen()
         setContent {
             BSecureTheme {
                 AppNavigation(loginModel, authRepository, googleSignInLauncher,userDetailsState,phoneAuthRepository)
