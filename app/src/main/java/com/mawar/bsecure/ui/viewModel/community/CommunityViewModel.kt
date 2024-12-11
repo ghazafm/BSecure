@@ -37,6 +37,21 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
     // Cache for user data (username, profile picture, etc.)
     val userCache = mutableMapOf<String, Map<String, Any>>()
 
+    fun loadUser(uid: String){
+        viewModelScope.launch {
+            try {
+                val user = repository.getUserByUid(uid)
+
+                if (!userCache.containsKey(uid)){
+                    userCache[uid] = user ?: emptyMap()
+                }
+            }catch (e: Exception) {
+                isLoading.value = false
+                errorMessage.value = e.message
+                Log.e("CommunityViewModel", "Error adding post", e)
+            }
+        }
+    }
     /**
      * Add a new post to Firestore.
      * @param uid User ID of the post creator.
