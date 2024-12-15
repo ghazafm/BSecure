@@ -21,6 +21,31 @@ class SosRepository {
             emit(emptyList())
         }
     }
+    suspend fun getEach(): Flow<List<Sos>> = flow {
+        try {
+            // Fetch all documents from the Firestore "sos" collection
+            val snapshot = db.collection("sos").get().await()
+
+            // Convert Firestore documents to a list of Sos objects
+            val sosList = snapshot.documents.mapNotNull { it.toObject<Sos>() }
+
+            // Group the list by 'jenis' and take only 1 Sos from each jenis
+            val uniqueSosList = sosList
+                .groupBy { it.jenis } // Group by jenis (Polisi, Rumah Sakit, Pemadam Kebakaran)
+                .mapNotNull { (_, sosByJenis) ->
+                    sosByJenis.firstOrNull() // Take only the first Sos from each group
+                }
+
+            // Emit the list of unique SOS entries
+            emit(uniqueSosList)
+
+            Log.d("SosRepository", "getAllSos() returned ${uniqueSosList.size} items (1 per jenis)")
+        } catch (e: Exception) {
+            Log.e("SosRepository", "Error fetching all SOS: ${e.message}", e)
+            emit(emptyList())
+        }
+    }
+
 
     suspend fun addSos(sos: Sos) {
         db.collection("sos").document(sos.id).set(sos).await()
@@ -33,6 +58,14 @@ class SosRepository {
         kecamatan: String = "",
         kelurahan: String = ""
     ): Flow<List<Sos>> = flow {
+
+        try {
+            val snapshot = db.collection("sos").get().await()
+            val sosList = snapshot.documents.mapNotNull { it.toObject<Sos>() }
+            emit(sosList)
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
         try {
             var snapshot = db.collection("sos")
                 .whereEqualTo("negara", negara)
@@ -97,6 +130,7 @@ class SosRepository {
                 .mapNotNull { (_, sosByJenis) -> sosByJenis.firstOrNull() }
 
             emit(uniqueSosList)
+            Log.d("SosRepository", "Fetched SOS by location: ${uniqueSosList.size}")
         } catch (e: Exception) {
             Log.e("SosRepository", "Error fetching SOS by location: ${e.message}", e)
             emit(emptyList())

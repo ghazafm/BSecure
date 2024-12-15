@@ -68,10 +68,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
+import com.mawar.bsecure.R
 import com.mawar.bsecure.data.emergency.EmergencyService
 import com.mawar.bsecure.data.emergency.EmergencyServiceData
 import com.mawar.bsecure.data.emergency.EmergencyServiceUtils
@@ -87,6 +89,36 @@ import com.mawar.bsecure.ui.viewModel.sos.SosViewModel
 import kotlinx.coroutines.launch
 import java.util.Locale
 
+fun getUserLocation(
+    fusedLocationClient: FusedLocationProviderClient,
+    context: Context,
+    viewModel: SosViewModel,
+    currentAddress: MutableState<String>
+) {
+
+    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+        location?.let {
+            val geocoder = Geocoder(context, Locale.getDefault())
+            val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 1)
+            if (addresses != null && addresses.isNotEmpty()) {
+                val address = addresses[0]
+                currentAddress.value = "${address.countryName}, ${address.adminArea}, ${address.locality}, ${address.subAdminArea}, ${address.subLocality}"
+
+                viewModel.getSosByLocation(
+                    negara = address.countryName,
+                    provinsi = address.adminArea,
+                    kota = address.locality,
+                    kecamatan = address.subAdminArea,
+                    kelurahan = address.subLocality
+                )
+                Log.d("LocationAddress", "Obtained address: ${currentAddress.value}")
+            } else {
+                currentAddress.value = "Location not found"
+            }
+        }
+    }
+}
+
 @Composable
 fun SOSScreen(
     navController: NavHostController,
@@ -100,7 +132,19 @@ fun SOSScreen(
     val emergencyServices = EmergencyServiceData.getEmergencyServices()
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     val currentAddress = remember { mutableStateOf("") }
-    val viewModelsos = SosViewModel(SosRepository())
+    val viewModel = SosViewModel(SosRepository()) // Use Hilt to get ViewModel
+    val isLoading by viewModel.isLoading.collectAsState()
+    val sosList by viewModel.sosList.collectAsState()
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            getUserLocation(fusedLocationClient, context, viewModel, currentAddress)
+        } else {
+            Toast.makeText(context, "Location permission is required to get SOS data", Toast.LENGTH_LONG).show()
+        }
+    }
 
     LaunchedEffect(Unit) {
         if (ActivityCompat.checkSelfPermission(
@@ -108,38 +152,15 @@ fun SOSScreen(
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                location?.let {
-                    val geocoder = Geocoder(context, Locale.getDefault())
-                    val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 1)
-                    if (addresses != null && addresses.isNotEmpty()) {
-                        val address = addresses[0]
-                        // Format: Country, Province, City, District, Sub-district
-                        viewModelsos.getSosByLocation(
-                            negara = address.countryName,
-                            provinsi = address.adminArea,
-                            kota = address.locality,
-                            kecamatan = address.subAdminArea,
-                            kelurahan = address.subLocality
-                        )
-                        val formattedAddress =
-                            "${address.countryName}, ${address.adminArea}, ${address.locality}, ${address.subAdminArea}, ${address.subLocality}"
-                        Log.d("LocationAddress", "Obtained address: $formattedAddress")
-
-                        currentAddress.value = formattedAddress
-                    } else {
-                        // Handle the case where no addresses are found
-                        currentAddress.value = "Location not found"
-                    }
-
-                }
-            }
+            getUserLocation(fusedLocationClient, context, viewModel, currentAddress)
+        } else {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
     Scaffold(
         topBar = { TopBars() },
-        bottomBar = { Bottom(viewModel = viewModelsos,navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid = uid) }
+        bottomBar = { Bottom(viewModel = viewModel,navController, userName = username, email = email, profilePictureUrl = profilePictureUrl, uid = uid) }
     ) { innerPadding ->
         Box(
             contentAlignment = Alignment.Center,
@@ -167,15 +188,13 @@ fun SOSScreen(
                     longitude = 112.645500
                 }
 
-                val sosList = viewModelsos.sosList.collectAsState().value
+                val sosList = viewModel.sosList.collectAsState().value
 
-                if (showDialog.value) {
+                if (showDialog.value && sosList.isNotEmpty()) {
                     EmergencyServicesDialog(
                         showDialog = showDialog,
-                        emergencyServices = emergencyServices,
                         context = context,
-                        userLocation = userLocation,
-                        userAddress = currentAddress.value, // Pass the current address to the dialog
+                        userAddress = currentAddress.value,
                         sos = sosList
                     )
                 }
@@ -204,9 +223,7 @@ fun SOSScreen(
 @Composable
 fun EmergencyServicesDialog(
     showDialog: MutableState<Boolean>,
-    emergencyServices: List<EmergencyService>,
     context: Context,
-    userLocation: Location,
     userAddress: String, // New parameter for address
     sos: List<Sos>
 
@@ -232,7 +249,7 @@ fun EmergencyServicesDialog(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    emergencyServices.forEach { service ->
+                    sos.forEach { service ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -242,12 +259,8 @@ fun EmergencyServicesDialog(
                                     shape = RoundedCornerShape(12.dp)
                                 )
                                 .clickable {
-                                    val userLatitude = userLocation.latitude
-                                    val userLongitude = userLocation.longitude
                                     FirestoreEmergencyService.callNearestService(
                                         context,
-                                        userLatitude,
-                                        userLongitude,
                                         service
                                     )
                                 }
@@ -262,9 +275,15 @@ fun EmergencyServicesDialog(
                                     .background(Color.White),
                                 contentAlignment = Alignment.Center
                             ) {
+                                val logoResId = when (service.jenis) {
+                                    "Polisi" -> R.drawable.criminal
+                                    "Rumah Sakit" -> R.drawable.hospital
+                                    "Pemadam Kebakaran" -> R.drawable.fire
+                                    else -> R.drawable.mic
+                                }
                                 Image(
-                                    painter = painterResource(id = service.iconResId),
-                                    contentDescription = "Icon ${service.name}",
+                                    painter = painterResource(id = logoResId),
+                                    contentDescription = "Logo for ${service.nama_instansi}",
                                     modifier = Modifier.size(40.dp),
                                     contentScale = ContentScale.Fit
                                 )
@@ -274,19 +293,75 @@ fun EmergencyServicesDialog(
 
                             Column {
                                 Text(
-                                    text = service.name,
+                                    text = service.nama_instansi +" (" + service.jenis + ")",
                                     style = MaterialTheme.typography.body1,
                                     color = MaterialTheme.colors.onSurface,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = service.phoneNumbers.joinToString(", "),
+                                    text = service.no_telp,
                                     style = MaterialTheme.typography.body2,
                                     color = MaterialTheme.colors.secondary
                                 )
                             }
                         }
                     }
+
+//                    emergencyServices.forEach { service ->
+//                        Row(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(vertical = 8.dp)
+//                                .background(
+//                                    color = MaterialTheme.colors.surface,
+//                                    shape = RoundedCornerShape(12.dp)
+//                                )
+//                                .clickable {
+//                                    val userLatitude = userLocation.latitude
+//                                    val userLongitude = userLocation.longitude
+//                                    FirestoreEmergencyService.callNearestService(
+//                                        context,
+//                                        userLatitude,
+//                                        userLongitude,
+//                                        service
+//                                    )
+//                                }
+//                                .padding(16.dp),
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.Start
+//                        ) {
+//                            Box(
+//                                modifier = Modifier
+//                                    .size(60.dp)
+//                                    .clip(CircleShape)
+//                                    .background(Color.White),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                Image(
+//                                    painter = painterResource(id = service.iconResId),
+//                                    contentDescription = "Icon ${service.name}",
+//                                    modifier = Modifier.size(40.dp),
+//                                    contentScale = ContentScale.Fit
+//                                )
+//                            }
+//
+//                            Spacer(modifier = Modifier.width(16.dp))
+//
+//                            Column {
+//                                Text(
+//                                    text = service.name,
+//                                    style = MaterialTheme.typography.body1,
+//                                    color = MaterialTheme.colors.onSurface,
+//                                    fontWeight = FontWeight.Bold
+//                                )
+//                                Text(
+//                                    text = service.phoneNumbers.joinToString(", "),
+//                                    style = MaterialTheme.typography.body2,
+//                                    color = MaterialTheme.colors.secondary
+//                                )
+//                            }
+//                        }
+//                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 

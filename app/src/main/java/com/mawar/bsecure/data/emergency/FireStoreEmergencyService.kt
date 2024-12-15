@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import com.mawar.bsecure.model.sos.Sos
 import com.mawar.bsecure.ui.view.screen.findNearestLocation
 import kotlinx.coroutines.tasks.await
 
@@ -31,19 +32,14 @@ object FirestoreEmergencyService {
     }
     fun callNearestService(
         context: Context,
-        userLatitude: Double,
-        userLongitude: Double,
-        service: EmergencyService
+        service: Sos
     ) {
-        val nearestLocation = findNearestLocation(userLatitude, userLongitude, service)
-        val phoneNumber = nearestLocation?.id?.let { id ->
-            service.phoneNumbers.find { it.contains(id) }
-        } ?: service.phoneNumbers.firstOrNull()
+        val phoneNumber = service.no_telp.takeIf { it.isNotEmpty() }
 
         if (phoneNumber != null) {
             PhoneUtils.makePhoneCall(context, phoneNumber)
         } else {
-            Toast.makeText(context, "No available contact for the nearest location", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "No available contact for the selected service", Toast.LENGTH_LONG).show()
         }
     }
 
